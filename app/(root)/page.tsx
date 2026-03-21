@@ -1,5 +1,5 @@
 import FeaturesBento from "@/components/features";
-import HeroSection from "@/components/hero";
+import HeroSection from "@/components/hero-section-3";
 
 export default function Home() {
   return (
@@ -9,3 +9,4 @@ export default function Home() {
     </>
   );
 }
+

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/header";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Waterflow — Work that flows like water",
@@ -42,12 +42,17 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="min-h-full flex flex-col"
+        className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300"
         style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 401 }}
-        suppressHydrationWarning
       >
-        <Header />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

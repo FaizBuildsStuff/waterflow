@@ -80,40 +80,41 @@ export const status = {
 // ── Semantic aliases (recommended for component usage) ────────
 export const colors = {
   // backgrounds
-  bgPage:        neutral[50],      // main page bg
-  bgSurface:     neutral[0],       // cards, panels
-  bgSubtle:      neutral[100],     // inputs, sidebar, code blocks
-  bgHover:       neutral[100],     // hover state on rows/buttons
-  bgActive:      water[50],        // active / selected state
+  bgPage:        "var(--background)",      // main page bg
+  bgSurface:     "var(--card)",            // cards, panels
+  bgSubtle:      "var(--muted)",           // inputs, sidebar, code blocks
+  bgHover:       "var(--accent)",          // hover state on rows/buttons
+  bgActive:      "var(--secondary)",       // active / selected state
 
   // text
-  textPrimary:   neutral[800],     // headings, bold labels
-  textBody:      neutral[600],     // body copy
-  textMuted:     neutral[400],     // placeholders, helper text
-  textInverse:   neutral[0],       // text on dark/colored bg
-  textBrand:     water[500],       // links, highlights
+  textPrimary:   "var(--foreground)",      // headings, bold labels
+  textBody:      "var(--muted-foreground)",// body copy
+  textMuted:     "var(--muted-foreground)",// placeholders, helper text
+  textInverse:   "var(--primary-foreground)", // text on dark/colored bg
+  textBrand:     "var(--primary)",         // links, highlights
 
   // brand / accent
-  brand:         water[500],       // primary CTA, active links
-  brandHover:    water[600],       // CTA hover
-  brandLight:    water[50],        // brand tint bg
-  brandBorder:   water[200],       // brand-tinted border
+  brand:         "var(--primary)",         // primary CTA, active links
+  brandHover:    "var(--primary)",         // CTA hover
+  brandLight:    "var(--primary)",         // brand tint bg
+  brandBorder:   "var(--border)",          // brand-colored border
 
   // secondary accent
-  accent:        aqua[400],        // secondary highlights
-  accentLight:   aqua[50],
+  accent:        "var(--accent)",          // secondary highlights
+  accentLight:   "var(--accent)",
 
   // borders & dividers
-  borderDefault: neutral[150],     // card borders, inputs
-  borderStrong:  neutral[200],     // focused input, separator
-  borderBrand:   water[300],       // brand-colored border
+  borderDefault: "var(--border)",          // card borders, inputs
+  borderStrong:  "var(--border)",          // focused input, separator
+  borderBrand:   "var(--primary)",         // brand-colored border
 
   // interactive
-  focusRing:     water[300],       // focus outline
+  focusRing:     "var(--ring)",            // focus outline
 
   // status
   ...status,
 } as const;
+
 
 // ── Shadow tokens ─────────────────────────────────────────────
 export const shadows = {
