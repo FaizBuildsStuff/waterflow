@@ -8,7 +8,6 @@ import Image from 'next/image'
 export default function HeroSection() {
     return (
         <>
-            <HeroHeader />
             <main className="overflow-hidden">
                 <section className="bg-background">
                     <div className="relative py-40">

@@ -3,127 +3,144 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Sparkles, Zap, Layout } from "lucide-react";
+import { Sparkles, Zap, Layout, Layers, Users, BarChart3, Bot } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
+
 export default function FeaturesBento() {
   const sectionRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Entrance Animation
       gsap.from(".bento-card", {
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 80%",
+          start: "top 75%",
         },
-        y: 40,
+        y: 60,
         opacity: 0,
-        stagger: 0.1,
-        duration: 1,
-        ease: "expo.out"
+        stagger: 0.15,
+        duration: 1.2,
+        ease: "power4.out",
+      });
+
+      // Subtle floating animation for the AI Badge
+      gsap.to(".ai-float", {
+        y: -10,
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
       });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-24 px-6 bg-background">
+    <section ref={sectionRef} className="py-24 px-6 bg-background overflow-hidden">
       <div className="max-w-7xl mx-auto">
 
         {/* Header Section */}
-        <div className="text-center mb-16">
-          <span className="px-4 py-1.5 rounded-full bg-secondary border border-border text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground shadow-sm">
-            Capabilities
+        <div className="text-center mb-20">
+          <span className="px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black uppercase tracking-[0.2em] text-primary shadow-sm">
+            Core Engine
           </span>
-          <h2 className="mt-6 text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-            Go from idea to published <br /> post in <span className="italic font-medium text-muted-foreground">minutes</span>
+          <h2 className="mt-6 text-4xl md:text-6xl font-serif font-medium tracking-tight text-foreground">
+            Unified intelligence for <br /> 
+            <span className="text-muted-foreground italic">high-velocity</span> teams.
           </h2>
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[300px]">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[320px]">
 
-          {/* Card 1: Keeping White Text on Blue Background */}
-          <div className="bento-card md:col-span-3 md:row-span-2 bg-gradient-to-br from-primary to-primary/80 rounded-[32px] p-8 flex flex-col justify-end relative overflow-hidden group shadow-lg">
-            <div className="absolute top-8 left-8 bg-white/20 backdrop-blur-md rounded-xl p-3 border border-white/20">
-              <Zap className="text-white" size={24} />
+          {/* Card 1: Main AI Feature */}
+          <div className="bento-card md:col-span-4 md:row-span-2 bg-gradient-to-b from-primary to-[#0052FF] rounded-[40px] p-10 flex flex-col justify-between relative overflow-hidden group shadow-2xl shadow-primary/20">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] group-hover:bg-white/20 transition-all duration-700" />
+            
+            <div className="z-10 bg-white/20 backdrop-blur-xl rounded-2xl p-4 w-fit border border-white/20 shadow-inner">
+              <Bot className="text-white" size={32} />
             </div>
+
             <div className="relative z-10">
-              <h3 className="text-2xl font-bold text-white leading-tight">
-                Go from idea to published post in <span className="italic opacity-80">minutes</span>
+              <h3 className="text-3xl font-bold text-white leading-tight tracking-tight">
+                Autonomous Task <br /> Decomposition.
               </h3>
-            </div>
-            <div className="absolute -right-10 top-20 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-700" />
-          </div>
-
-          {/* Card 2: Semantic Card */}
-          <div className="bento-card md:col-span-6 md:row-span-2 bg-card rounded-[32px] border border-border p-8 flex flex-col shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-card-foreground">Write a post with your draft ideas naturally</h3>
-              <p className="text-muted-foreground text-sm mt-2 max-w-sm font-medium">Our solutions are designed with growth in mind, so your product can evolve.</p>
-            </div>
-
-            <div className="mt-auto bg-muted/50 rounded-2xl border border-border p-6 h-[300px] translate-y-4">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-muted" />
-                <div className="space-y-1.5">
-                  <div className="h-2 w-24 bg-muted-foreground/30 rounded-full" />
-                  <div className="h-1.5 w-16 bg-muted-foreground/20 rounded-full" />
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="h-2 w-full bg-background border border-border rounded-full" />
-                <div className="h-2 w-full bg-background border border-border rounded-full" />
-                <div className="h-2 w-2/3 bg-background border border-border rounded-full" />
-              </div>
-              <div className="absolute top-1/2 right-12 bg-background shadow-2xl rounded-2xl p-4 border border-border animate-bounce-slow">
-                <div className="flex items-center gap-2">
-                  <Sparkles size={14} className="text-primary" />
-                  <span className="text-[10px] font-black uppercase tracking-wider text-foreground">AI Suggestion</span>
-                </div>
-              </div>
+              <p className="text-white/70 mt-4 font-medium leading-relaxed">
+                Input a goal, and Waterflow drafts your entire project architecture in seconds.
+              </p>
             </div>
           </div>
 
-          {/* Card 3: Semantic Card */}
-          <div className="bento-card md:col-span-3 md:row-span-2 bg-card rounded-[32px] border border-border p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col relative overflow-hidden">
-            <span className="absolute top-8 right-8 text-[9px] font-black uppercase bg-primary/10 text-primary px-2 py-1 rounded border border-primary/20">Beta</span>
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-card-foreground">Write like your favourite creator</h3>
-            </div>
-            <div className="mt-auto flex -space-x-3 mb-4">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="w-10 h-10 rounded-full border-2 border-background bg-muted shadow-sm" />
-              ))}
-            </div>
-            <div className="bg-primary/5 border border-primary/10 rounded-xl p-4">
-              <p className="text-[11px] text-primary font-bold italic">"Generating post in Alex Hormozi's style..."</p>
-            </div>
-          </div>
-
-          {/* Card 4: Semantic Card */}
-          <div className="bento-card md:col-span-6 md:row-span-1 bg-card rounded-[32px] border border-border p-8 flex items-center gap-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-            <div className="flex-1">
-              <h3 className="text-xl font-bold text-card-foreground">Edit and schedule your posts</h3>
-              <p className="text-muted-foreground text-sm mt-2 font-medium">Plan and publish your polls at the perfect time, all in one place.</p>
-            </div>
-            <div className="w-48 h-full bg-muted/50 rounded-t-2xl border-x border-t border-border p-4">
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="aspect-square bg-background border border-border rounded shadow-sm" />)}
+          {/* Card 2: Real-time Workspace */}
+          <div className="bento-card md:col-span-8 md:row-span-2 bg-card rounded-[40px] border border-border p-10 flex flex-col shadow-sm relative overflow-hidden group">
+            <div className="flex justify-between items-start mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-foreground">The Unified Workspace</h3>
+                <p className="text-muted-foreground mt-2 max-w-sm font-medium">Sync documentation, tasks, and team chat in a single cognitive flow.</p>
+              </div>
+              <div className="flex -space-x-3">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="w-10 h-10 rounded-full border-4 border-card bg-muted flex items-center justify-center text-[10px] font-bold">U{i}</div>
+                ))}
               </div>
             </div>
+
+            {/* Mock UI Element */}
+            <div className="mt-auto bg-muted/30 rounded-t-[32px] border-t border-x border-border p-8 h-[320px] translate-y-2 transition-transform duration-500 group-hover:translate-y-0">
+               <div className="space-y-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" />
+                    <div className="h-3 w-48 bg-muted-foreground/20 rounded-full" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="h-24 rounded-2xl bg-background border border-border p-4">
+                        <div className="h-2 w-12 bg-primary/40 rounded-full mb-3" />
+                        <div className="space-y-2">
+                           <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
+                           <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
+                        </div>
+                    </div>
+                    <div className="h-24 rounded-2xl bg-background border border-border p-4">
+                        <div className="h-2 w-12 bg-green-500/40 rounded-full mb-3" />
+                        <div className="space-y-2">
+                           <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
+                           <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
+                        </div>
+                    </div>
+                  </div>
+               </div>
+               
+               <div className="ai-float absolute top-20 right-20 bg-primary text-white shadow-2xl rounded-2xl p-4 flex items-center gap-3 border border-white/20">
+                  <Sparkles size={16} />
+                  <span className="text-xs font-bold tracking-wider uppercase">AI Digest Syncing...</span>
+               </div>
+            </div>
           </div>
 
-          {/* Card 5: Semantic Card */}
-          <div className="bento-card md:col-span-6 md:row-span-1 bg-card rounded-[32px] border border-border p-8 flex items-center gap-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-            <div className="flex-1">
-              <h3 className="text-xl font-bold text-card-foreground">Unified Publishing</h3>
-              <p className="text-muted-foreground text-sm mt-2 font-medium">One click to LinkedIn, X, and Threads.</p>
+          {/* Card 3: Analytics */}
+          <div className="bento-card md:col-span-5 md:row-span-1 bg-card rounded-[40px] border border-border p-8 flex items-center gap-6 shadow-sm group">
+            <div className="bg-primary/10 p-4 rounded-2xl text-primary transition-colors group-hover:bg-primary group-hover:text-white">
+              <BarChart3 size={28} />
             </div>
-            <div className="flex gap-3">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="w-12 h-12 rounded-2xl bg-foreground flex items-center justify-center text-background shadow-lg">
-                  <Layout size={20} />
+            <div>
+              <h3 className="text-xl font-bold text-foreground">Velocity Tracking</h3>
+              <p className="text-muted-foreground text-sm mt-1 font-medium">Predictive analytics for team deadlines.</p>
+            </div>
+          </div>
+
+          {/* Card 4: Daily Digest */}
+          <div className="bento-card md:col-span-7 md:row-span-1 bg-card rounded-[40px] border border-border p-8 flex items-center justify-between shadow-sm group overflow-hidden">
+            <div className="z-10">
+              <h3 className="text-xl font-bold text-foreground">Automated Daily Digests</h3>
+              <p className="text-muted-foreground text-sm mt-1 font-medium">Get a summarized pulse of your team's progress via Slack or Email.</p>
+            </div>
+            <div className="flex gap-2 translate-x-4 group-hover:translate-x-0 transition-transform duration-500">
+              {[1, 2].map(i => (
+                <div key={i} className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center border border-border shadow-inner">
+                  <Layers size={24} className="text-muted-foreground" />
                 </div>
               ))}
             </div>
@@ -131,16 +148,6 @@ export default function FeaturesBento() {
 
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        .animate-bounce-slow {
-          animation: bounce-slow 4s ease-in-out infinite;
-        }
-      `}</style>
     </section>
   );
 }
