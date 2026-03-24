@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Logo } from '@/components/logo'
 import { Menu, X, ArrowRight } from 'lucide-react'
@@ -17,6 +17,29 @@ const menuItems = [
 export const HeroHeader = () => {
     const [isOpen, setIsOpen] = React.useState(false)
     const [isScrolled, setIsScrolled] = React.useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+    useEffect(() => {
+        // First check localStorage for quick UI state
+        const localLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
+        setIsLoggedIn(localLoggedIn)
+
+        // Then verify with API to be sure
+        fetch('/api/auth/me')
+          .then(res => {
+            if (res.ok) {
+              setIsLoggedIn(true)
+              localStorage.setItem('isLoggedIn', 'true')
+            } else {
+              setIsLoggedIn(false)
+              localStorage.setItem('isLoggedIn', 'false')
+            }
+          })
+          .catch(() => {
+            setIsLoggedIn(false)
+            localStorage.setItem('isLoggedIn', 'false')
+          })
+    }, [])
 
     React.useEffect(() => {
         const handleScroll = () => {
@@ -71,17 +94,35 @@ export const HeroHeader = () => {
                         {/* Actions */}
                         <div className="flex items-center gap-3">
                             <div className="hidden items-center gap-3 sm:flex">
-                                <Link 
-                                    href="/login" 
-                                    className="text-sm font-medium text-muted-foreground hover:text-foreground"
-                                >
-                                    Log in
-                                </Link>
-                                <Button asChild size="sm" className="rounded-full shadow-md">
-                                    <Link href="/signup">
-                                        Sign up
-                                    </Link>
-                                </Button>
+                                {isLoggedIn ? (
+                                    <>
+                                        <Link 
+                                            href="/dashboard" 
+                                            className="text-sm font-medium text-muted-foreground hover:text-foreground"
+                                        >
+                                            Dashboard
+                                        </Link>
+                                        <Button asChild size="sm" className="rounded-full shadow-md">
+                                            <Link href="/dashboard">
+                                                Go to App
+                                            </Link>
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link 
+                                            href="/signin" 
+                                            className="text-sm font-medium text-muted-foreground hover:text-foreground"
+                                        >
+                                            Log in
+                                        </Link>
+                                        <Button asChild size="sm" className="rounded-full shadow-md">
+                                            <Link href="/signup">
+                                                Sign up
+                                            </Link>
+                                        </Button>
+                                    </>
+                                )}
                             </div>
 
                             {/* Mobile Toggle */}
@@ -120,7 +161,7 @@ export const HeroHeader = () => {
                         <hr className="my-6 border-white/10" />
                         <div className="flex flex-col gap-4">
                             <Button variant="outline" className="w-full rounded-2xl py-6" asChild>
-                                <Link href="/login">Log in</Link>
+                                <Link href="/signin">Log in</Link>
                             </Button>
                             <Button className="w-full rounded-2xl py-6 shadow-xl" asChild>
                                 <Link href="/signup">Get Started Free</Link>

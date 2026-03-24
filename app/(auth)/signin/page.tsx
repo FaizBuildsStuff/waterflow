@@ -1,6 +1,7 @@
 'use client'
 
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,8 +10,44 @@ import Link from 'next/link'
 import { ChevronLeft, Github, Mail, Lock, ArrowRight } from 'lucide-react'
 import gsap from 'gsap'
 
-export default function Login() {
+export default function SignIn() {
     const containerRef = useRef<HTMLDivElement>(null)
+    const router = useRouter()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
+        setError('')
+        
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+
+            const data = await res.json()
+
+            if (res.ok) {
+                localStorage.setItem('isLoggedIn', 'true')
+                if (data.user.onboarded) {
+                    router.push('/dashboard')
+                } else {
+                    router.push('/onboarding')
+                }
+            } else {
+                setError(data.error || 'Sign in failed')
+            }
+        } catch (err) {
+            setError('Something went wrong. Please try again.')
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -65,7 +102,12 @@ export default function Login() {
                 </div>
 
                 <div className="stagger-item bg-card rounded-3xl border border-border p-8 shadow-sm">
-                    <form action="" className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {error && (
+                            <div className="text-red-500 text-xs font-bold text-center bg-red-500/10 py-2 rounded-lg">
+                                {error}
+                            </div>
+                        )}
                         {/* Email Field */}
                         <div className="stagger-item space-y-2">
                             <Label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
@@ -79,15 +121,16 @@ export default function Login() {
                                     name="email"
                                     placeholder="name@company.com"
                                     className="h-11 pl-10 focus-visible:ring-primary/20 border-border/60 bg-background/50"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
                             </div>
                         </div>
 
-                        {/* Password Field */}
                         <div className="stagger-item space-y-2">
                             <div className="flex justify-between items-center">
-                                <Label htmlFor="password" text-sm className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                                <Label htmlFor="password" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
                                     Password
                                 </Label>
                                 <Link href="#" className="text-[11px] font-medium text-primary hover:underline underline-offset-4">
@@ -102,13 +145,15 @@ export default function Login() {
                                     name="password"
                                     placeholder="••••••••"
                                     className="h-11 pl-10 focus-visible:ring-primary/20 border-border/60 bg-background/50"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
                             </div>
                         </div>
 
-                        <Button className="stagger-item group w-full h-11 text-base font-medium shadow-lg shadow-primary/10 active:scale-[0.98] transition-transform">
-                            Sign In
+                        <Button disabled={loading} className="stagger-item group w-full h-11 text-base font-medium shadow-lg shadow-primary/10 active:scale-[0.98] transition-transform">
+                            {loading ? 'Signing in...' : 'Sign In'}
                             <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
                         </Button>
                     </form>
@@ -138,7 +183,7 @@ export default function Login() {
 
                 <p className="stagger-item mt-8 text-center text-sm text-muted-foreground">
                     Don't have an account?{' '}
-                    <Link href="#" className="text-primary font-semibold hover:underline underline-offset-4 decoration-2">
+                    <Link href="/signup" className="text-primary font-semibold hover:underline underline-offset-4 decoration-2">
                         Sign up for free
                     </Link>
                 </p>

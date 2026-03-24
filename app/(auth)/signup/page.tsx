@@ -1,6 +1,7 @@
 'use client'
 
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -12,6 +13,39 @@ import gsap from 'gsap'
 
 export default function SignUp() {
     const containerRef = useRef<HTMLDivElement>(null)
+    const router = useRouter()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [name, setName] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
+        setError('')
+        
+        try {
+            const res = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, name })
+            })
+
+            const data = await res.json()
+
+            if (res.ok) {
+                localStorage.setItem('isLoggedIn', 'true')
+                router.push('/onboarding')
+            } else {
+                setError(data.error || 'Signup failed')
+            }
+        } catch (err) {
+            setError('Something went wrong. Please try again.')
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -122,7 +156,27 @@ export default function SignUp() {
                     </div>
 
                     <Card variant="outline" className="auth-card block border-border/60 bg-card/30 p-8 backdrop-blur-sm overflow-hidden shadow-xl shadow-primary/5 rounded-[2rem]">
-                        <form action="" className="space-y-5">
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            {error && (
+                                <div className="text-red-500 text-xs font-bold text-center bg-red-500/10 py-2 rounded-lg">
+                                    {error}
+                                </div>
+                            )}
+
+                            <div className="form-element space-y-2.5">
+                                <Label htmlFor="name" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Full Name</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="name"
+                                        className="h-11 bg-background/50 focus-visible:ring-primary/20"
+                                        placeholder="Ali Khan"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
                             <div className="form-element space-y-2.5">
                                 <Label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Email Address</Label>
                                 <div className="relative">
@@ -132,13 +186,15 @@ export default function SignUp() {
                                         id="email"
                                         className="h-11 pl-10 bg-background/50 focus-visible:ring-primary/20"
                                         placeholder="name@company.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         required
                                     />
                                 </div>
                             </div>
 
                             <div className="form-element space-y-2.5">
-                                <Label htmlFor="password" text-sm className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Password</Label>
+                                <Label htmlFor="password" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">Password</Label>
                                 <div className="relative">
                                     <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground/40" />
                                     <Input
@@ -146,14 +202,16 @@ export default function SignUp() {
                                         id="password"
                                         className="h-11 pl-10 bg-background/50 focus-visible:ring-primary/20"
                                         placeholder="••••••••"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
                                         required
                                     />
                                 </div>
                             </div>
 
                             <div className="form-element pt-2">
-                                <Button className="group w-full h-11 text-base shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
-                                    Get Started
+                                <Button disabled={loading} className="group w-full h-11 text-base shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+                                    {loading ? 'Creating account...' : 'Get Started'}
                                     <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
                                 </Button>
                             </div>
@@ -188,7 +246,7 @@ export default function SignUp() {
 
                     <p className="form-element mt-10 text-center text-sm text-zinc-500">
                         Already have an account?{' '}
-                        <Link href="/login" className="text-primary font-semibold hover:underline decoration-2 underline-offset-4">
+                        <Link href="/signin" className="text-primary font-semibold hover:underline decoration-2 underline-offset-4">
                             Sign in
                         </Link>
                     </p>
