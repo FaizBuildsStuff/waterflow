@@ -1,97 +1,145 @@
+'use client'
+
+import { useLayoutEffect, useRef } from 'react'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
+import { ChevronLeft, Github, Mail, Lock, ArrowRight } from 'lucide-react'
+import gsap from 'gsap'
 
 export default function Login() {
+    const containerRef = useRef<HTMLDivElement>(null)
+
+    useLayoutEffect(() => {
+        const ctx = gsap.context(() => {
+            const tl = gsap.timeline({ defaults: { ease: "power4.out" } })
+
+            // Initial hidden states to prevent flicker
+            gsap.set(".login-container", { opacity: 0, y: 20 })
+            gsap.set(".stagger-item", { opacity: 0, y: 10 })
+
+            tl.to(".login-container", {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.2
+            })
+            .to(".stagger-item", {
+                opacity: 1,
+                y: 0,
+                stagger: 0.08,
+                duration: 0.8
+            }, "-=0.7")
+        }, containerRef)
+
+        return () => ctx.revert()
+    }, [])
+
     return (
-        <section className="bg-background flex min-h-screen px-4 py-16 md:py-24">
-            <div className="bg-muted m-auto w-full max-w-sm rounded-2xl border p-8">
-                <div>
-                    <Link
-                        href="/"
-                        aria-label="go home">
-                        <Logo className="h-6 w-fit" />
+        <section ref={containerRef} className="bg-background relative flex min-h-screen w-full flex-col items-center justify-center px-4 selection:bg-primary/20">
+            
+            {/* Top Navigation / Back Option */}
+            <div className="stagger-item absolute top-8 left-8">
+                <Button variant="ghost" asChild className="group text-muted-foreground hover:text-foreground hover:bg-transparent p-0">
+                    <Link href="/">
+                        <ChevronLeft className="mr-1 size-4 transition-transform group-hover:-translate-x-1" />
+                        Back to home
                     </Link>
-                    <h1 className="mt-6 font-serif text-2xl font-medium">Sign in</h1>
-                    <p className="text-muted-foreground mt-1 text-sm">Enter your email to continue</p>
+                </Button>
+            </div>
+
+            <div className="login-container m-auto w-full max-w-[400px]">
+                {/* Branding & Header */}
+                <div className="mb-10 text-center">
+                    <div className="stagger-item flex justify-center">
+                        <Logo className="h-8 w-fit" />
+                    </div>
+                    <h1 className="stagger-item mt-6 font-serif text-3xl font-medium tracking-tight">
+                        Welcome back
+                    </h1>
+                    <p className="stagger-item text-muted-foreground mt-2 text-sm">
+                        Enter your credentials to access your workspace
+                    </p>
                 </div>
 
-                <form
-                    action=""
-                    className="mt-8 space-y-5">
-                    <div className="space-y-2">
-                        <Label
-                            htmlFor="email"
-                            className="text-sm">
-                            Email
-                        </Label>
-                        <Input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="you@example.com"
-                            required
-                        />
+                <div className="stagger-item bg-card rounded-3xl border border-border p-8 shadow-sm">
+                    <form action="" className="space-y-5">
+                        {/* Email Field */}
+                        <div className="stagger-item space-y-2">
+                            <Label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                                Email Address
+                            </Label>
+                            <div className="relative">
+                                <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground/40" />
+                                <Input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="name@company.com"
+                                    className="h-11 pl-10 focus-visible:ring-primary/20 border-border/60 bg-background/50"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Password Field */}
+                        <div className="stagger-item space-y-2">
+                            <div className="flex justify-between items-center">
+                                <Label htmlFor="password" text-sm className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
+                                    Password
+                                </Label>
+                                <Link href="#" className="text-[11px] font-medium text-primary hover:underline underline-offset-4">
+                                    Forgot?
+                                </Link>
+                            </div>
+                            <div className="relative">
+                                <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground/40" />
+                                <Input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    placeholder="••••••••"
+                                    className="h-11 pl-10 focus-visible:ring-primary/20 border-border/60 bg-background/50"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <Button className="stagger-item group w-full h-11 text-base font-medium shadow-lg shadow-primary/10 active:scale-[0.98] transition-transform">
+                            Sign In
+                            <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+                        </Button>
+                    </form>
+
+                    <div className="stagger-item my-8 flex items-center gap-4">
+                        <div className="h-px flex-1 bg-border/60" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">or</span>
+                        <div className="h-px flex-1 bg-border/60" />
                     </div>
 
-                    <Button className="w-full">Continue with Email</Button>
-                </form>
-
-                <div className="my-6 flex items-center gap-3">
-                    <hr className="flex-1" />
-                    <span className="text-muted-foreground text-xs">or</span>
-                    <hr className="flex-1" />
+                    <div className="grid grid-cols-2 gap-3">
+                        <Button type="button" variant="outline" className="stagger-item h-11 border-border/60 hover:bg-muted/50 transition-colors">
+                            <Github className="mr-2 size-4" />
+                            GitHub
+                        </Button>
+                        <Button type="button" variant="outline" className="stagger-item h-11 border-border/60 hover:bg-muted/50 transition-colors">
+                            <svg className="mr-2 size-4" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" opacity="0.6"/>
+                                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C.79 9.84 0 13.01 0 16.45c0 3.44.79 6.61 2.18 9.38l3.66-2.84z" opacity="0.4"/>
+                                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" opacity="0.8"/>
+                            </svg>
+                            Google
+                        </Button>
+                    </div>
                 </div>
 
-                <div className="space-y-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="size-4"
-                            viewBox="0 0 256 262">
-                            <path
-                                fill="#4285f4"
-                                d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"></path>
-                            <path
-                                fill="#34a853"
-                                d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"></path>
-                            <path
-                                fill="#fbbc05"
-                                d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z"></path>
-                            <path
-                                fill="#eb4335"
-                                d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"></path>
-                        </svg>
-                        <span>Continue with Google</span>
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="size-4"
-                            viewBox="0 0 256 256">
-                            <path
-                                fill="currentColor"
-                                d="M128 0C57.317 0 0 57.317 0 128c0 56.554 36.676 104.535 87.535 121.46c6.397 1.185 8.746-2.777 8.746-6.158c0-3.052-.117-13.135-.174-23.83c-35.61 7.742-43.124-15.103-43.124-15.103c-5.823-14.795-14.213-18.73-14.213-18.73c-11.613-7.944.876-7.78.876-7.78c12.853.902 19.621 13.19 19.621 13.19c11.417 19.568 29.945 13.911 37.249 10.64c1.149-8.272 4.466-13.92 8.127-17.116c-28.431-3.236-58.318-14.212-58.318-63.258c0-13.975 5-25.394 13.188-34.358c-1.329-3.224-5.71-16.242 1.24-33.874c0 0 10.749-3.44 35.21 13.121c10.21-2.836 21.16-4.258 32.038-4.307c10.878.049 21.837 1.47 32.066 4.307c24.431-16.56 35.165-13.12 35.165-13.12c6.967 17.63 2.584 30.65 1.255 33.873c8.207 8.964 13.173 20.383 13.173 34.358c0 49.163-29.944 59.988-58.447 63.157c4.591 3.972 8.682 11.762 8.682 23.704c0 17.126-.148 30.91-.148 35.126c0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128C256 57.317 198.683 0 128 0"
-                            />
-                        </svg>
-                        <span>Continue with GitHub</span>
-                    </Button>
-                </div>
-
-                <p className="text-muted-foreground mt-8 text-center text-sm">
+                <p className="stagger-item mt-8 text-center text-sm text-muted-foreground">
                     Don't have an account?{' '}
-                    <Link
-                        href="#"
-                        className="text-primary font-medium hover:underline">
-                        Sign up
+                    <Link href="#" className="text-primary font-semibold hover:underline underline-offset-4 decoration-2">
+                        Sign up for free
                     </Link>
                 </p>
             </div>
