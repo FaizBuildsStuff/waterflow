@@ -32,7 +32,10 @@ export async function POST(req: NextRequest) {
       id: user.id,
       email: user.email,
       name: user.name,
-      onboarded: user.onboarded
+      onboarded: user.onboarded,
+      subscriptionTier: user.subscription_tier,
+      subscriptionStatus: user.subscription_status,
+      trialEndsAt: user.trial_ends_at ? user.trial_ends_at.toISOString() : null
     });
 
     const response = NextResponse.json({ 

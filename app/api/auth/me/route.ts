@@ -18,7 +18,13 @@ export async function GET(req: NextRequest) {
 
     // Fetch user from DB to ensure they still exist and get latest data
     const [user] = await sql`
-      SELECT id, email, name, onboarded FROM users WHERE id = ${payload.id}
+      SELECT 
+        id, email, name, onboarded,
+        subscription_tier as "subscriptionTier",
+        subscription_status as "subscriptionStatus",
+        trial_ends_at as "trialEndsAt",
+        ai_usage_count as "aiUsageCount"
+      FROM users WHERE id = ${payload.id}
     `;
 
     if (!user) {
@@ -26,8 +32,10 @@ export async function GET(req: NextRequest) {
     }
 
     // Also get active workspace
+    const workspaceId = req.cookies.get('workspace_id')?.value;
     let [workspace] = await sql`
-      SELECT * FROM workspaces WHERE owner_id = ${user.id} LIMIT 1
+      SELECT * FROM workspaces WHERE owner_id = ${user.id} 
+      ${workspaceId ? sql`AND id = ${workspaceId}` : sql`LIMIT 1`}
     `;
 
     // Resilient fallback: Create a default workspace if none exists
@@ -41,9 +49,12 @@ export async function GET(req: NextRequest) {
         `;
         
         // Also create a default project for this new workspace
+        const defaultProjectName = 'Getting started with Waterflow';
+        const projectSlug = defaultProjectName.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Math.random().toString(36).substring(2, 7);
+        
         await tx`
-          INSERT INTO projects (name, workspace_id)
-          VALUES ('Getting started with Waterflow', ${ws.id})
+          INSERT INTO projects (name, workspace_id, slug, owner_id)
+          VALUES (${defaultProjectName}, ${ws.id}, ${projectSlug}, ${user.id})
         `;
         
         // Update user onboarded status

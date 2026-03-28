@@ -1,4 +1,5 @@
 import { Sidebar } from "@/components/dashboard/sidebar"
+import { SubscriptionGuard } from "@/components/dashboard/subscription-guard"
 
 export default function DashboardLayout({
   children,
@@ -14,7 +15,9 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col lg:pl-64">
         {/* Your Header could go here if it's shared across all dashboard pages */}
         <main className="flex-1">
-          {children}
+          <SubscriptionGuard>
+            {children}
+          </SubscriptionGuard>
         </main>
       </div>
     </div>

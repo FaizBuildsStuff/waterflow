@@ -8,6 +8,9 @@ export interface UserPayload {
   email: string;
   name: string;
   onboarded: boolean;
+  subscriptionTier?: string;
+  subscriptionStatus?: string;
+  trialEndsAt?: string;
 }
 
 export const signToken = async (payload: UserPayload): Promise<string> => {

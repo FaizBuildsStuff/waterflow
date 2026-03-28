@@ -8,43 +8,74 @@ import {
   Zap, 
   CheckCircle2, 
   Clock, 
-  Activity, 
+  Rocket, 
   AlertCircle,
   Folder,
-  ChevronRight
+  ChevronRight,
+  TrendingUp,
+  Loader2
 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+
+import { useRouter } from 'next/navigation'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function DashboardPage() {
+  const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [projects, setProjects] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState({
+  const [workspaces, setWorkspaces] = useState<any[]>([])
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState('')
+  const [projectName, setProjectName] = useState('')
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [stats, setStats] = useState<any>({
     total: 0,
     completed: 0,
     inProgress: 0,
-    overdue: 0
+    overdue: 0,
+    highlights: []
   })
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
       try {
-        const [meRes, projectsRes, statsRes] = await Promise.all([
+        const [meRes, projectsRes, statsRes, workspacesRes] = await Promise.all([
           fetch('/api/auth/me'),
           fetch('/api/projects'),
-          fetch('/api/dashboard/stats')
+          fetch('/api/dashboard/stats'),
+          fetch('/api/workspaces')
         ])
         
         const meData = await meRes.json()
         const projectsData = await projectsRes.json()
         const statsData = await statsRes.json()
+        const workspacesData = await workspacesRes.json()
 
         if (meData.user) setUser(meData.user)
-        if (projectsData.projects) {
-          console.log('Projects fetched:', projectsData.projects)
-          setProjects(projectsData.projects)
-        }
+        if (meData.workspace) setSelectedWorkspaceId(meData.workspace.id.toString())
+        if (projectsData.projects) setProjects(projectsData.projects)
         if (!statsData.error) setStats(statsData)
+        if (workspacesData.workspaces) setWorkspaces(workspacesData.workspaces)
       } catch (err) {
         console.error('Dashboard fetch error:', err)
       } finally {
@@ -55,20 +86,23 @@ export default function DashboardPage() {
     fetchData()
   }, [])
 
-  const handleCreateProject = async () => {
-    const name = prompt('Enter project name:')
-    if (!name) return
+  const handleCreateProject = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    if (!projectName || !selectedWorkspaceId) return
 
     setLoading(true)
     try {
       const res = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ name: projectName, workspace_id: parseInt(selectedWorkspaceId) })
       })
       if (res.ok) {
         const data = await res.json()
         setProjects([data.project, ...projects])
+        setProjectName('')
+        setIsCreateDialogOpen(false)
+        router.push(`/dashboard/projects/${data.project.slug}`)
       }
     } catch (err) {
       console.error('Create project error:', err)
@@ -77,26 +111,77 @@ export default function DashboardPage() {
     }
   }
 
+  const handleProjectClick = (slug: string) => {
+    router.push(`/dashboard/projects/${slug}`)
+  }
+
   return (
-    <div className="flex-1 min-h-screen bg-[#0A0A0A] p-8 space-y-8 animate-in fade-in duration-700">
+    <div className="flex-1 min-h-screen bg-[#0A0A0A] p-4 md:p-8 space-y-8 animate-in fade-in duration-700 overflow-x-hidden">
       
       {/* Zone 1: Welcome Banner */}
-      <section className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-primary/10 to-blue-600/10 border border-white/5 p-12">
+      <section className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-primary/10 to-blue-600/10 border border-white/5 p-8 md:p-12">
         <div className="relative z-10 max-w-2xl">
-          <h1 className="text-4xl font-bold tracking-tight text-white mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">
             Good morning, {user?.name?.split(' ')[0] || 'there'}
           </h1>
-          <p className="text-zinc-400 text-lg mb-8 leading-relaxed">
+          <p className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed">
             {projects.length === 0 
               ? "You haven't created any projects yet. Start with a goal and let AI do the lifting."
               : `You have ${projects.length} active project${projects.length > 1 ? 's' : ''} in your workspace.`}
           </p>
-          <Button 
-            onClick={handleCreateProject}
-            className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-2xl font-bold transition-all active:scale-95 shadow-xl shadow-white/5"
-          >
-            {projects.length === 0 ? 'Create your first project' : 'New Project'}
-          </Button>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                className="bg-white text-black hover:bg-zinc-200 px-6 md:px-8 py-5 md:py-6 rounded-2xl font-bold transition-all active:scale-95 shadow-xl shadow-white/5 text-sm"
+              >
+                {projects.length === 0 ? 'Create your first project' : 'New Project'}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-3xl p-8 max-w-md">
+              <DialogHeader className="space-y-4">
+                <div className="size-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
+                  <Plus size={24} />
+                </div>
+                <div className="space-y-1">
+                  <DialogTitle className="text-2xl font-bold tracking-tight">Create Project</DialogTitle>
+                  <DialogDescription className="text-zinc-500 text-sm">
+                    Select a workspace and give your project a name.
+                  </DialogDescription>
+                </div>
+              </DialogHeader>
+              <form onSubmit={handleCreateProject} className="space-y-6 mt-6">
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Project Name</Label>
+                  <Input 
+                    placeholder="e.g. Website Redesign" 
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    className="bg-white/5 border-white/10 rounded-xl h-12 text-sm focus:ring-primary/40"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Workspace</Label>
+                  <Select value={selectedWorkspaceId} onValueChange={setSelectedWorkspaceId}>
+                    <SelectTrigger className="bg-white/5 border-white/10 rounded-xl h-12 text-sm">
+                      <SelectValue placeholder="Select workspace" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0D0D0D] border-white/5 text-white">
+                      {workspaces.map((ws) => (
+                        <SelectItem key={ws.id} value={ws.id.toString()}>
+                          {ws.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <DialogFooter>
+                  <Button type="submit" disabled={loading} className="w-full h-12 bg-white text-black hover:bg-zinc-200 rounded-xl font-bold">
+                    {loading ? 'Creating...' : 'Create Project'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
         
         {/* Abstract shapes for premium look */}
@@ -108,15 +193,35 @@ export default function DashboardPage() {
         
         {/* Zone 2: AI Digest Card */}
         <div className="lg:col-span-4 h-full">
-          <Card className="h-full bg-[#0D0D0D] border-white/5 p-8 rounded-[32px] flex flex-col items-center justify-center text-center space-y-6 group hover:border-white/10 transition-colors">
-            <div className="size-20 rounded-3xl bg-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
-              <Zap size={32} />
+          <Card className="h-full bg-[#0D0D0D] border-white/5 p-8 rounded-[32px] flex flex-col items-start text-left space-y-6 group hover:border-white/10 transition-colors">
+            <div className="flex items-center justify-between w-full">
+              <div className="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
+                <Zap size={24} />
+              </div>
+              <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase tracking-widest">Live Updates</Badge>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-bold text-white">AI Morning Digest</h3>
-              <p className="text-zinc-500 text-sm leading-relaxed max-w-[200px]">
-                Your morning digest will appear here once you have active tasks.
-              </p>
+            <div className="space-y-4 w-full">
+              <h3 className="text-lg font-bold text-white">AI Agency Digest</h3>
+              <div className="space-y-3">
+                {stats.highlights && stats.highlights.length > 0 ? (
+                  stats.highlights.map((task: any) => (
+                    <div key={task.id} className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-2 hover:bg-white/10 transition-all cursor-pointer" onClick={() => handleProjectClick(task.project_slug)}>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-primary">{task.project_name}</span>
+                        <Badge className={cn(
+                          "text-[8px] font-black px-1.5 py-0.5",
+                          task.priority === 'High' ? "bg-red-500/20 text-red-500" : "bg-zinc-500/20 text-zinc-500"
+                        )}>{task.priority}</Badge>
+                      </div>
+                      <p className="text-xs font-bold text-white line-clamp-1">{task.title}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-zinc-500 text-sm leading-relaxed">
+                    Your morning digest will appear here once you have active tasks assigned.
+                  </p>
+                )}
+              </div>
             </div>
           </Card>
         </div>
@@ -132,25 +237,29 @@ export default function DashboardPage() {
           ) : projects.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {projects.map((project) => (
-                <Card key={project.id} className="bg-[#0D0D0D] border-white/5 p-6 rounded-2xl group hover:border-primary/50 transition-all cursor-pointer relative overflow-hidden">
+                <Card 
+                  key={project.id} 
+                  onClick={() => handleProjectClick(project.slug)}
+                  className="bg-[#0D0D0D] border-white/5 p-6 rounded-2xl group hover:border-primary/50 transition-all cursor-pointer relative overflow-hidden"
+                >
                   <div className="flex items-center gap-4 mb-4">
                     <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center text-zinc-400 group-hover:bg-primary/20 group-hover:text-primary transition-all">
                       <Folder size={20} />
                     </div>
                     <div>
                       <h3 className="font-bold text-white">{project.name}</h3>
-                      <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Active Project</p>
+                      <p className="text-[10px] text-zinc-500 uppercase tracking-widest">/projects/{project.slug}</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-[10px] font-bold text-zinc-600 pt-4 border-t border-white/5">
-                    <span>Active</span>
+                    <span>Collaborative</span>
                     <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Card>
               ))}
               <Card 
-                onClick={handleCreateProject}
-                className="bg-white/5 border-2 border-dashed border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center group hover:border-white/20 transition-all cursor-pointer"
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="bg-white/5 border-2 border-dashed border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center group hover:border-white/20 transition-all cursor-pointer h-full min-h-[120px]"
               >
                 <Plus size={24} className="text-zinc-500 group-hover:text-white transition-colors" />
                 <span className="text-[10px] font-bold text-zinc-500 mt-2 uppercase tracking-widest">Add Project</span>
@@ -158,7 +267,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <Card 
-              onClick={handleCreateProject}
+              onClick={() => setIsCreateDialogOpen(true)}
               className="h-full bg-[#0D0D0D] border-white/5 p-8 rounded-[32px] flex flex-col items-center justify-center text-center border-dashed border-2 group hover:border-white/20 transition-all cursor-pointer min-h-[300px]"
             >
               <div className="size-16 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 mb-6 group-hover:bg-primary group-hover:text-white transition-all duration-300">
@@ -174,7 +283,7 @@ export default function DashboardPage() {
       {/* Zone 4: Quick Stats Strip */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
-          icon={<Activity className="text-blue-400" size={18} />} 
+          icon={<Rocket className="text-blue-400" size={18} />} 
           label="Total Tasks" 
           value={stats.total} 
         />
@@ -184,12 +293,12 @@ export default function DashboardPage() {
           value={stats.completed} 
         />
         <StatCard 
-          icon={<Clock className="text-primary" size={18} />} 
+          icon={<Loader2 className="text-primary" size={18} />} 
           label="In Progress" 
           value={stats.inProgress} 
         />
         <StatCard 
-          icon={<AlertCircle className="text-red-400" size={18} />} 
+          icon={<TrendingUp className="text-amber-500" size={18} />} 
           label="Overdue" 
           value={stats.overdue} 
         />

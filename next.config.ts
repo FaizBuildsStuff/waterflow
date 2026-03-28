@@ -2,7 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  // reactCompiler: true,
+  
+  // @ts-ignore
+  allowedDevOrigins: ['sociologically-palaeobotanic-jarrod.ngrok-free.dev'],
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['sociologically-palaeobotanic-jarrod.ngrok-free.dev'],
+    },
+  },
+
   images: {
     remotePatterns: [
       {

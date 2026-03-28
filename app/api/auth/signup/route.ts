@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const [user] = await sql`
       INSERT INTO users (email, password_hash, name)
       VALUES (${email}, ${passwordHash}, ${name || ''})
-      RETURNING id, email, name, onboarded
+      RETURNING id, email, name, onboarded, subscription_tier, subscription_status, trial_ends_at
     `;
 
     // Sign token
@@ -36,7 +36,10 @@ export async function POST(req: NextRequest) {
       id: user.id,
       email: user.email,
       name: user.name,
-      onboarded: user.onboarded
+      onboarded: user.onboarded,
+      subscriptionTier: user.subscription_tier,
+      subscriptionStatus: user.subscription_status,
+      trialEndsAt: user.trial_ends_at ? user.trial_ends_at.toISOString() : null
     });
 
     const response = NextResponse.json({ 

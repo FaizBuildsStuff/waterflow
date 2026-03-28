@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { Logo } from '@/components/logo'
-import { ChevronRight, ArrowLeft } from 'lucide-react'
+import { ChevronRight, ArrowLeft, Gem } from 'lucide-react'
+import Pricing from '@/components/pricing-3'
 
 const roles = [
   'Solo professional',
@@ -28,13 +29,14 @@ export default function OnboardingPage() {
   const [formData, setFormData] = useState({
     workspaceName: '',
     role: '',
-    teamSize: ''
+    teamSize: '',
+    plan: 'free'
   })
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const handleNext = () => {
-    if (step < 3) setStep(step + 1)
+    if (step < 4) setStep(step + 1)
     else handleSubmit()
   }
 
@@ -71,12 +73,12 @@ export default function OnboardingPage() {
         <Logo className="h-8 w-auto" />
       </div>
 
-      <Card className="w-full max-w-md bg-[#0D0D0D] border-white/5 p-8 rounded-3xl shadow-2xl overflow-hidden relative">
+      <Card className={`w-full ${step === 4 ? 'max-w-6xl' : 'max-w-md'} bg-[#0D0D0D] border-white/5 p-8 rounded-3xl shadow-2xl overflow-hidden relative transition-all duration-500`}>
         {/* Progress Bar */}
         <div className="absolute top-0 left-0 h-1 bg-white/5 w-full">
             <div 
                 className="h-full bg-primary transition-all duration-500 ease-out" 
-                style={{ width: `${(step / 3) * 100}%` }}
+                style={{ width: `${(step / 4) * 100}%` }}
             />
         </div>
 
@@ -99,7 +101,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {step === 2 && ( step === 2 && (
+          {step === 2 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
               <h2 className="text-2xl font-bold tracking-tight text-white mb-2">What's your role?</h2>
               <p className="text-zinc-500 text-sm mb-6">We'll personalize your experience based on what you do.</p>
@@ -120,7 +122,7 @@ export default function OnboardingPage() {
                 ))}
               </div>
             </div>
-          ))}
+          )}
 
           {step === 3 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
@@ -145,6 +147,29 @@ export default function OnboardingPage() {
             </div>
           )}
 
+          {step === 4 && (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+               <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest mb-4">
+                    <Gem size={12} />
+                    Tiered Intelligence
+                </div>
+                <h2 className="text-3xl font-black tracking-tight text-white mb-2">Select Your Strategy</h2>
+                <p className="text-zinc-500 text-sm max-w-md mx-auto">All plans include a 3-day full access trial. Choose the velocity that fits your team.</p>
+              </div>
+              
+              <div className="bg-[#0A0A0A]/50 rounded-3xl border border-white/5 overflow-hidden">
+                <Pricing />
+              </div>
+
+              <div className="mt-8 p-4 rounded-2xl bg-white/5 border border-white/5 text-center">
+                 <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
+                    You can change your plan anytime from the billing dashboard.
+                 </p>
+              </div>
+            </div>
+          )}
+
           <div className="pt-8 flex items-center justify-between gap-4">
             {step > 1 ? (
               <Button 
@@ -162,7 +187,7 @@ export default function OnboardingPage() {
               disabled={loading || (step === 1 && !formData.workspaceName) || (step === 2 && !formData.role) || (step === 3 && !formData.teamSize)}
               className="bg-primary text-white hover:bg-primary/90 px-8 py-6 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 ml-auto"
             >
-              {loading ? 'Setting up...' : step === 3 ? 'Get Started' : 'Continue'}
+              {loading ? 'Setting up...' : step === 4 ? 'Complete Setup' : 'Continue'}
               <ChevronRight className="ml-2 size-4" />
             </Button>
           </div>
@@ -170,7 +195,7 @@ export default function OnboardingPage() {
       </Card>
       
       <p className="mt-8 text-zinc-600 text-[10px] uppercase font-bold tracking-[0.2em]">
-        Step {step} of 3
+        Step {step} of 4
       </p>
     </div>
   )

@@ -81,20 +81,19 @@ The product works for all three without separate products — same codebase, dif
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 14 (App Router) |
-| Styling | Tailwind CSS + CSS-in-JS (inline styles for component tokens) |
+| Framework | Next.js 16.2.0 (App Router) |
+| Styling | Tailwind CSS (v4) |
 | UI Components | shadcn/ui |
 | Animations | GSAP + ScrollTrigger, CSS keyframes |
 | Font | Satoshi via Fontshare API |
 | Language | TypeScript |
-| Backend | Node.js + Prisma ORM |
-| Database | PostgreSQL (via Supabase) |
-| Auth | Clerk or NextAuth.js |
-| AI layer | Claude API (claude-haiku for speed, claude-sonnet for complex tasks) |
-| Payments | Stripe Billing (subscriptions) |
-| Email | Resend |
-| Hosting | Vercel (frontend) + Railway (backend/workers) |
-| File storage | Supabase Storage |
+| Backend | Node.js (App Router APIs) |
+| Database | PostgreSQL (via NeonDB / `postgres` js) |
+| Auth | Custom JWT + HTTP-only cookies (`jose`) |
+| AI layer | OpenAI API (GPT-4o mini) |
+| Payments | Stripe Billing (planned) |
+| Email | Resend (planned) |
+| Hosting | Vercel |
 
 ---
 
@@ -110,34 +109,26 @@ waterflow/
 │   │   └── sign-up/
 │   ├── (dashboard)/
 │   │   ├── layout.tsx       # Dashboard shell (sidebar + topbar)
-│   │   ├── projects/
+│   │   ├── dashboard/       # Main dashboard & project views
 │   │   ├── tasks/
 │   │   ├── team/
 │   │   └── settings/
 │   └── api/
-│       ├── ai/              # Claude API routes
+│       ├── ai/              # OpenAI API routes
 │       ├── tasks/
 │       ├── projects/
-│       └── webhooks/        # Stripe webhooks
+│       └── auth/            # Auth & session management
 ├── components/
 │   ├── landing/
 │   │   ├── HeroSection.tsx  # ✅ Built — water SVG, GSAP, stats
-│   │   ├── FeaturesSection.tsx
-│   │   ├── PricingSection.tsx
-│   │   └── FooterSection.tsx
 │   ├── dashboard/
-│   │   ├── Sidebar.tsx
-│   │   ├── KanbanBoard.tsx
-│   │   ├── TaskCard.tsx
-│   │   └── DigestPanel.tsx
+│   │   ├── sidebar.tsx      # ✅ Built — workspace switcher
+│   │   ├── kanban-board.tsx # ✅ Built — 4 column board
 │   └── ui/                  # shadcn/ui components
 ├── lib/
-│   ├── colors.ts            # ✅ Built — full design token system
-│   ├── claude.ts            # Claude API client
-│   ├── stripe.ts            # Stripe client
-│   └── db.ts                # Prisma client
-├── prisma/
-│   └── schema.prisma        # DB schema
+│   ├── auth.ts              # JWT handlers
+│   ├── db.ts                # Postgres client
+│   └── migrations.ts        # DB schema migrations
 ├── public/
 │   └── assets/
 └── context.md               # ✅ This file
@@ -193,22 +184,35 @@ waterflow/
 | 4 | Polish + launch | Onboarding flow, landing page, ProductHunt prep |
 
 ### Components build status
-- [x] `colors.ts` — design token system
-- [x] `layout.tsx` — Satoshi font, Waterflow metadata
-- [x] `HeroSection.tsx` — water SVG, GSAP animations, stats strip
-- [ ] `FeaturesSection.tsx`
-- [ ] `PricingSection.tsx`
-- [ ] `FooterSection.tsx`
-- [ ] Auth pages
-- [ ] Dashboard shell
-- [ ] Kanban board
-- [ ] AI task breakdown
-- [ ] Daily digest
-- [ ] Stripe billing
+- [x] Collaborative Workspaces & Project Sharing
+- [x] Multi-View Dashboards (Kanban, List, Timeline)
+- [x] AI Task Breakdown & Subtasks
+- [x] Unified "My Tasks" & Team Management
+- [x] Real-time Comments & Discussions
+- [x] Slug-based Routing & Clean Navigation
+- [x] Real-time Task Sync & Notifications
+- [x] Interactive AI Wireframe Board
+- [ ] Stripe billing (Planned)
+- [ ] Daily AI digest (Planned)
 
 ---
 
-## 10. Key Design Decisions
+## 10. Technical Architecture Updates
+
+**Collaboration Model:**
+Projects can be shared via email invitations. Members are added to `project_members` table. Permissions are checked at the API layer to ensure only workspace owners OR project members can access tasks.
+
+**Multi-View Implementation:**
+- **Kanban**: Drag-and-drop state management via `@dnd-kit`.
+- **List-View**: High-density data table for bulk management.
+- **Timeline**: Chronological roadmap with `date-fns` for live countdowns.
+
+**AI Layer:**
+Uses OpenAI `gpt-4o-mini` to decompose individual tasks into sub-logical units (subtasks), streamlining the flow for complex agency work.
+
+---
+
+## 11. Key Design Decisions
 
 **Why Satoshi?**
 Clean, geometric, modern — feels like a premium SaaS product without being cold. The `401` weight gives body text an unusually refined lightness that pairs well with the water theme.
@@ -224,7 +228,7 @@ Better instruction-following for structured JSON outputs, lower latency on Haiku
 
 ---
 
-## 11. For AI Assistants (Prompt Context)
+## 12. For AI Assistants (Prompt Context)
 
 When helping build Waterflow, always:
 

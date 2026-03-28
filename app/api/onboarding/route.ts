@@ -32,9 +32,12 @@ export async function POST(req: NextRequest) {
       `;
 
       // 2. Create Default Project (Optional, but recommended for new users)
+      const defaultProjectName = 'Getting started with Waterflow';
+      const slug = defaultProjectName.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Math.random().toString(36).substring(2, 7);
+      
       await tx`
-        INSERT INTO projects (name, workspace_id)
-        VALUES ('Getting started with Waterflow', ${workspace.id})
+        INSERT INTO projects (name, workspace_id, slug, owner_id)
+        VALUES (${defaultProjectName}, ${workspace.id}, ${slug}, ${payload.id})
       `;
 
       // 3. Update User onboarded status

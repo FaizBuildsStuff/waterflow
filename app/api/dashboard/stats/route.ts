@@ -46,30 +46,48 @@ export async function GET(req: NextRequest) {
 
     // Fetch stats for all tasks in these projects
     const total = await sql`
-      SELECT count(*) FROM tasks WHERE project_id IN (${projectIds})
+      SELECT count(*) FROM tasks WHERE project_id = ANY(${projectIds})
     `;
     
     const completed = await sql`
-      SELECT count(*) FROM tasks WHERE project_id IN (${projectIds}) AND status = 'Done'
+      SELECT count(*) FROM tasks WHERE project_id = ANY(${projectIds}) AND status = 'Done'
     `;
 
     const inProgress = await sql`
-      SELECT count(*) FROM tasks WHERE project_id IN (${projectIds}) AND status = 'In Progress'
+      SELECT count(*) FROM tasks WHERE project_id = ANY(${projectIds}) AND status = 'In Progress'
     `;
 
     // Overdue tasks (placeholder logic: tasks with status 'Todo' or 'In Progress' and created more than 7 days ago if no due date)
     const overdue = await sql`
       SELECT count(*) FROM tasks 
-      WHERE project_id IN (${projectIds}) 
+      WHERE project_id = ANY(${projectIds}) 
       AND status != 'Done' 
       AND created_at < NOW() - INTERVAL '7 days'
+    `;
+
+    // Highlights: Get top 3 most recent pending/important tasks across all projects
+    const highlights = await sql`
+      SELECT t.id, t.title, t.priority, t.status, p.name as project_name, p.slug as project_slug
+      FROM tasks t
+      JOIN projects p ON t.project_id = p.id
+      WHERE t.project_id = ANY(${projectIds})
+      AND t.status != 'Done'
+      ORDER BY 
+        CASE t.priority 
+          WHEN 'High' THEN 1 
+          WHEN 'Medium' THEN 2 
+          ELSE 3 
+        END,
+        t.created_at DESC
+      LIMIT 3
     `;
 
     return NextResponse.json({ 
       total: parseInt(total[0].count),
       completed: parseInt(completed[0].count),
       inProgress: parseInt(inProgress[0].count),
-      overdue: parseInt(overdue[0].count)
+      overdue: parseInt(overdue[0].count),
+      highlights
     });
   } catch (error) {
     console.error('Stats fetch error:', error);

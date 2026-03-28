@@ -1,8 +1,11 @@
+'use client'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Check, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useState } from 'react'
+import { Loader2 } from 'lucide-react'
 
 const plans = [
     {
@@ -19,19 +22,20 @@ const plans = [
     },
     {
         name: 'Pro Flow',
-        price: '$9.99',
+        price: '$5',
         period: '/month',
-        description: 'For individuals architecting their personal brand.',
+        description: 'Autonomous task decomposition for scaling creators.',
         features: [
             'Autonomous Task Decomposition',
             'Unlimited Workspace Sync',
             'AI Daily Sync Digests',
             'Standard Processing Speed',
         ],
+        productId: process.env.NEXT_PUBLIC_POLAR_PRO_PRODUCT_ID || 'pro_flow_prod_id'
     },
     {
         name: 'Neural Engine',
-        price: '$12.99', // Adjusted price up to differentiate from Pro
+        price: '$8',
         period: '/month',
         description: 'The full power of Waterflow for high-velocity teams.',
         features: [
@@ -42,10 +46,39 @@ const plans = [
         ],
         highlighted: true,
         badge: 'Best Value',
+        productId: process.env.NEXT_PUBLIC_POLAR_NEURAL_PRODUCT_ID || 'neural_engine_prod_id'
     },
 ]
 
 export default function Pricing() {
+    const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+    const handleUpgrade = async (productId: string, planName: string) => {
+        if (!productId) return;
+        setLoadingPlan(planName);
+        try {
+            const res = await fetch('/api/payments/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId })
+            });
+            const data = await res.json();
+            
+            if (!res.ok) {
+                alert(data.error || 'Checkout failed. Please check the server logs.');
+                return;
+            }
+
+            if (data.url) {
+                window.location.href = data.url;
+            }
+        } catch (err) {
+            console.error('Checkout failed:', err);
+            alert('A network error occurred. Please try again.');
+        } finally {
+            setLoadingPlan(null);
+        }
+    };
     return (
         <section className="bg-background @container py-24">
             {/* Increased max-width to 5xl to accommodate 3 columns comfortably */}
@@ -97,13 +130,18 @@ export default function Pricing() {
                             </div>
 
                             <Button
-                                asChild
+                                onClick={() => plan.productId && handleUpgrade(plan.productId, plan.name)}
+                                disabled={!!loadingPlan || plan.price === '$0'}
                                 variant={plan.highlighted ? 'default' : 'outline'}
-                                className="mt-8 w-full gap-2">
-                                <Link href="#link">
-                                    {plan.price === '$0' ? 'Get Started Free' : 'Upgrade Now'}
-                                    <ArrowRight className="size-4" />
-                                </Link>
+                                className="mt-8 w-full gap-2 rounded-xl h-12 font-bold uppercase tracking-widest text-[10px]">
+                                {loadingPlan === plan.name ? (
+                                    <Loader2 className="animate-spin size-4" />
+                                ) : (
+                                    <>
+                                        {plan.price === '$0' ? 'Included' : 'Upgrade Now'}
+                                        <ArrowRight className="size-4" />
+                                    </>
+                                )}
                             </Button>
                         </Card>
                     ))}
