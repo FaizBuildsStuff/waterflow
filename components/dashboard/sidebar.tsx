@@ -77,6 +77,11 @@ export const Sidebar = () => {
   const [selectedWorkspaceId, setSelectedWorkspaceId] = React.useState('')
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
+  // New Workspace State
+  const [isNewWorkspaceOpen, setIsNewWorkspaceOpen] = React.useState(false)
+  const [newWorkspaceName, setNewWorkspaceName] = React.useState('')
+  const [isCreatingWorkspace, setIsCreatingWorkspace] = React.useState(false)
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
@@ -142,6 +147,33 @@ export const Sidebar = () => {
     }
   }
 
+  const handleCreateWorkspace = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newWorkspaceName) return;
+    setIsCreatingWorkspace(true);
+    try {
+      const res = await fetch('/api/workspaces', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newWorkspaceName })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIsNewWorkspaceOpen(false);
+        setNewWorkspaceName('');
+        // Reload to refresh everything
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to create workspace');
+      }
+    } catch (err) {
+      console.error('Create workspace error:', err);
+    } finally {
+      setIsCreatingWorkspace(false);
+    }
+  }
+
   useLayoutEffect(() => {
     if (activeWorkspace) setSelectedWorkspaceId(activeWorkspace.id.toString());
   }, [activeWorkspace])
@@ -189,10 +221,26 @@ export const Sidebar = () => {
                 </div>
               </ScrollArea>
               <Separator className="my-2 bg-white/5" />
-              <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 transition-all text-left">
-                <Plus size={16} />
-                Create Workspace
-              </button>
+              {user?.subscriptionTier === 'free' && workspaces.length >= 1 ? (
+                <div className="px-3 py-2.5 rounded-xl border border-white/5 bg-white/5 space-y-1">
+                  <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Free Tier Limit</p>
+                  <p className="text-[9px] text-zinc-600">Upgrade to Pro to create more workspaces.</p>
+                  <Link href="/dashboard/billing" onClick={() => setIsWorkspaceOpen(false)} className="text-[9px] text-primary hover:underline font-bold inline-block mt-1">
+                    Upgrade Now
+                  </Link>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => {
+                    setIsWorkspaceOpen(false);
+                    setIsNewWorkspaceOpen(true);
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 transition-all text-left"
+                >
+                  <Plus size={16} />
+                  Create Workspace
+                </button>
+              )}
             </div>
           </PopoverContent>
         </Popover>
@@ -337,6 +385,43 @@ export const Sidebar = () => {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* New Workspace Dialog */}
+      <Dialog open={isNewWorkspaceOpen} onOpenChange={setIsNewWorkspaceOpen}>
+        <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-3xl p-8 max-w-md">
+          <DialogHeader className="space-y-4">
+            <div className="size-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
+              <Plus size={24} />
+            </div>
+            <div className="space-y-1">
+              <DialogTitle className="text-2xl font-bold tracking-tight">Create Workspace</DialogTitle>
+              <DialogDescription className="text-zinc-500 text-sm">
+                Name your new strategic command center.
+              </DialogDescription>
+            </div>
+          </DialogHeader>
+          <form onSubmit={handleCreateWorkspace} className="space-y-6 mt-6">
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Workspace Name</Label>
+              <Input 
+                placeholder="e.g. Acme Agency" 
+                value={newWorkspaceName}
+                onChange={(e) => setNewWorkspaceName(e.target.value)}
+                className="bg-white/5 border-white/10 rounded-xl h-12 text-sm focus:ring-primary/40"
+              />
+            </div>
+            <DialogFooter>
+              <Button 
+                type="submit"
+                disabled={isCreatingWorkspace || !newWorkspaceName}
+                className="w-full h-12 bg-white text-black hover:bg-zinc-200 rounded-xl font-bold"
+              >
+                {isCreatingWorkspace ? "Creating..." : "Create Workspace"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </aside>
   )
 }

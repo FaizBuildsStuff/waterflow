@@ -42,6 +42,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
+    // Check workspace limit for free tier
+    const [user] = await sql`SELECT subscription_tier FROM users WHERE id = ${payload.id}`;
+    const workspacesCount = await sql`SELECT count(*) FROM workspaces WHERE owner_id = ${payload.id}`;
+    const count = parseInt(workspacesCount[0].count);
+
+    if ((!user || user.subscription_tier === 'free') && count >= 1) {
+      return NextResponse.json({ 
+        error: 'Free tier is limited to 1 workspace. Upgrade to create more.',
+        code: 'LIMIT_REACHED'
+      }, { status: 403 });
+    }
+
     const { name } = await req.json();
 
     if (!name) {
