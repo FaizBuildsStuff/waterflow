@@ -1,53 +1,38 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
-import { ChevronLeft, Github, Mail, Lock, ArrowRight } from 'lucide-react'
+import { ChevronLeft, Github, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react'
 import gsap from 'gsap'
+import { useActionState } from 'react'
+import { loginUser } from './actions'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 export default function SignIn() {
     const containerRef = useRef<HTMLDivElement>(null)
     const router = useRouter()
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState('')
+    
+    // Using useActionState for form handling instead of fetch
+    const [state, formAction, pending] = useActionState(loginUser, { 
+        error: undefined, success: false, onboarded: false 
+    });
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
-        setError('')
-        
-        try {
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            })
-
-            const data = await res.json()
-
-            if (res.ok) {
-                localStorage.setItem('isLoggedIn', 'true')
-                if (data.user.onboarded) {
-                    router.push('/dashboard')
-                } else {
-                    router.push('/onboarding')
-                }
+    // Handle standard redirection after successful login
+    useEffect(() => {
+        if (state?.success) {
+            localStorage.setItem('isLoggedIn', 'true');
+            if (state.onboarded) {
+                router.push('/dashboard');
             } else {
-                setError(data.error || 'Sign in failed')
+                router.push('/onboarding');
             }
-        } catch (err) {
-            setError('Something went wrong. Please try again.')
-        } finally {
-            setLoading(false)
         }
-    }
+    }, [state, router]);
 
     useLayoutEffect(() => {
         const ctx = gsap.context(() => {
@@ -102,12 +87,18 @@ export default function SignIn() {
                 </div>
 
                 <div className="stagger-item bg-card rounded-3xl border border-border p-8 shadow-sm">
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {error && (
-                            <div className="text-red-500 text-xs font-bold text-center bg-red-500/10 py-2 rounded-lg">
-                                {error}
-                            </div>
+                    {/* Updated form: action instead of onSubmit, method POST for browser-native security */}
+                    <form action={formAction} className="space-y-5">
+                        {state?.error && (
+                            <Alert variant="destructive" className="stagger-item border-red-500/50 bg-red-500/10">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>Authentication Failed</AlertTitle>
+                                <AlertDescription>
+                                    {state.error}
+                                </AlertDescription>
+                            </Alert>
                         )}
+                        
                         {/* Email Field */}
                         <div className="stagger-item space-y-2">
                             <Label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/80">
@@ -121,8 +112,6 @@ export default function SignIn() {
                                     name="email"
                                     placeholder="name@company.com"
                                     className="h-11 pl-10 focus-visible:ring-primary/20 border-border/60 bg-background/50"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
                             </div>
@@ -145,15 +134,14 @@ export default function SignIn() {
                                     name="password"
                                     placeholder="••••••••"
                                     className="h-11 pl-10 focus-visible:ring-primary/20 border-border/60 bg-background/50"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
                             </div>
                         </div>
 
-                        <Button disabled={loading} className="stagger-item group w-full h-11 text-base font-medium shadow-lg shadow-primary/10 active:scale-[0.98] transition-transform">
-                            {loading ? 'Signing in...' : 'Sign In'}
+                        {/* Submit Button uses 'pending' state for accessibility and loading UX */}
+                        <Button type="submit" disabled={pending} className="stagger-item group w-full h-11 text-base font-medium shadow-lg shadow-primary/10 active:scale-[0.98] transition-transform">
+                            {pending ? 'Signing in...' : 'Sign In'}
                             <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
                         </Button>
                     </form>

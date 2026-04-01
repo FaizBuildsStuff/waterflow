@@ -46,7 +46,7 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
           <div className="size-20 rounded-3xl bg-primary/10 flex items-center justify-center text-primary mx-auto animate-bounce-subtle">
             <Lock size={40} />
           </div>
-          
+
           <div className="space-y-3">
             <h2 className="text-3xl font-black text-white tracking-tight uppercase">Trial Expired</h2>
             <p className="text-zinc-500 text-sm font-medium leading-relaxed">
@@ -65,7 +65,7 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
               Sign out
             </Button>
           </div>
-          
+
           <div className="pt-8 flex items-center justify-center gap-6 opacity-40 grayscale">
             <div className="text-[10px] font-black uppercase tracking-widest text-white">Secure Payments via Polar.sh</div>
           </div>

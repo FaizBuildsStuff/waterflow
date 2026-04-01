@@ -4,10 +4,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   
   // @ts-ignore
-  allowedDevOrigins: ['sociologically-palaeobotanic-jarrod.ngrok-free.dev'],
+  allowedDevOrigins: ['mamie-rooted-unprofanely.ngrok-free.dev'],
   experimental: {
     serverActions: {
-      allowedOrigins: ['sociologically-palaeobotanic-jarrod.ngrok-free.dev'],
+      allowedOrigins: ['mamie-rooted-unprofanely.ngrok-free.dev'],
     },
   },
 

@@ -15,7 +15,6 @@ export default function Home() {
     <>
       <HeroSection />
       <LogoCloud />
-      <FeaturesBento />
       <Features />
       <Integrations />
       <Content />

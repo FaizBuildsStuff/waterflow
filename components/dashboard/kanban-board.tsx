@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { 
-  Plus, 
-  MoreHorizontal, 
-  Clock, 
-  MessageSquare, 
+import {
+  Plus,
+  MoreHorizontal,
+  Clock,
+  MessageSquare,
   Paperclip,
   CheckSquare,
   TrendingUp,
@@ -16,21 +16,21 @@ import {
   Send,
   Loader2
 } from 'lucide-react'
-import { 
-  DndContext, 
-  closestCorners, 
-  KeyboardSensor, 
-  PointerSensor, 
-  useSensor, 
+import {
+  DndContext,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
   useSensors,
   DragOverlay,
   defaultDropAnimationSideEffects,
   useDroppable
 } from '@dnd-kit/core'
-import { 
-  arrayMove, 
-  SortableContext, 
-  sortableKeyboardCoordinates, 
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   useSortable
 } from '@dnd-kit/sortable'
@@ -41,23 +41,23 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogFooter,
   DialogDescription,
   DialogTrigger
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -116,10 +116,10 @@ const SortableTaskCard = ({ task, onClick, members }: { task: Task, onClick: () 
   }
 
   return (
-    <div 
-      ref={setNodeRef} 
-      style={style} 
-      {...attributes} 
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
       {...listeners}
       onClick={onClick}
     >
@@ -145,7 +145,7 @@ const SortableTaskCard = ({ task, onClick, members }: { task: Task, onClick: () 
               </div>
               <div className="flex items-center gap-1">
                 <CheckSquare size={12} />
-                <span>{Array.isArray(task.subtasks) ? task.subtasks.filter((s:any) => s.completed).length : 0}/{Array.isArray(task.subtasks) ? task.subtasks.length : 0}</span>
+                <span>{Array.isArray(task.subtasks) ? task.subtasks.filter((s: any) => s.completed).length : 0}/{Array.isArray(task.subtasks) ? task.subtasks.length : 0}</span>
               </div>
             </div>
             {task.due_date && (
@@ -259,7 +259,7 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
     // If dropped over a column or another task in a different column
     const overId = over.id
     const overColumn = columns.find(c => c.title === overId || c.id.toString() === overId.toString())
-    
+
     let newStatus = activeTask.status
     if (overColumn) {
       newStatus = overColumn.title
@@ -326,9 +326,9 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
       const res = await fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          title: newTaskTitle, 
-          project_id: projectId, 
+        body: JSON.stringify({
+          title: newTaskTitle,
+          project_id: projectId,
           status: newTaskStatus,
           description: newTaskDesc,
           due_date: newTaskDeadline,
@@ -355,9 +355,9 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
 
   return (
     <div className="h-full w-full">
-      <DndContext 
-        sensors={sensors} 
-        collisionDetection={closestCorners} 
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
         onDragEnd={onDragEnd}
       >
         <ScrollArea className="h-full w-full">
@@ -379,23 +379,23 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
                     </button>
                   </div>
 
-                  <SortableContext 
+                  <SortableContext
                     id={column.title}
-                    items={columnTasks.map(t => t.id)} 
+                    items={columnTasks.map(t => t.id)}
                     strategy={verticalListSortingStrategy}
                   >
                     <KanbanDroppableColumn id={column.title}>
                       <div className="space-y-3 min-h-[500px] flex flex-col bg-white/[0.02] rounded-3xl p-2 border border-dashed border-white/5 group-hover:border-primary/20 transition-all">
                         {columnTasks.map((task) => (
-                          <SortableTaskCard 
-                            key={task.id} 
-                            task={task} 
+                          <SortableTaskCard
+                            key={task.id}
+                            task={task}
                             members={members}
-                            onClick={() => setSelectedTask(task)} 
+                            onClick={() => setSelectedTask(task)}
                           />
                         ))}
-                        
-                        <button 
+
+                        <button
                           onClick={() => { setNewTaskStatus(column.title); setIsAddTaskOpen(true); }}
                           className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-dashed border-white/5 text-zinc-600 hover:border-primary/20 hover:text-primary transition-all group mt-auto"
                         >
@@ -428,9 +428,9 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
                   <form onSubmit={handleAddColumn} className="space-y-6 mt-6">
                     <div className="space-y-3">
                       <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Column Title</Label>
-                      <Input 
+                      <Input
                         autoFocus
-                        placeholder="e.g. Backlog" 
+                        placeholder="e.g. Backlog"
                         value={newColTitle}
                         onChange={(e) => setNewColTitle(e.target.value)}
                         className="bg-white/5 border-white/10 rounded-xl h-12"
@@ -460,14 +460,14 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
                 </div>
               </DialogHeader>
               <DialogFooter className="flex flex-col gap-3 mt-6">
-                <Button 
+                <Button
                   variant="destructive"
                   className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[11px]"
                   onClick={handleDeleteColumn}
                 >
                   Delete Column
                 </Button>
-                <Button 
+                <Button
                   variant="ghost"
                   className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[11px] text-zinc-500 hover:text-white"
                   onClick={() => setIsDeleteColOpen(false)}
@@ -489,7 +489,7 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
             <div className="p-8 space-y-8">
               <SheetHeader className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Badge className={cn("border px-3 py-1 text-[10px] font-black uppercase tracking-widest", 
+                  <Badge className={cn("border px-3 py-1 text-[10px] font-black uppercase tracking-widest",
                     selectedTask?.priority === 'High' ? "text-red-400 bg-red-400/10" : "text-primary bg-primary/10"
                   )}>
                     {selectedTask?.priority}
@@ -526,9 +526,9 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-black uppercase tracking-widest text-zinc-500">Subtasks</h3>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleAiTaskBreakdown}
                     disabled={isAiBreakingDown}
                     className="text-primary hover:bg-primary/10 gap-2 h-8"
@@ -574,21 +574,21 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
                       </div>
                     </div>
                   ))}
-                  
+
                   <div className="flex gap-4 pt-4">
                     <Avatar className="size-8">
                       <AvatarFallback className="bg-zinc-800 text-[10px]">U</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-2">
-                      <textarea 
-                        placeholder="Write a comment..." 
+                      <textarea
+                        placeholder="Write a comment..."
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary h-24 resize-none transition-all"
                       />
                       <div className="flex justify-end">
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           onClick={handleAddComment}
                           className="bg-primary text-white hover:bg-primary/80 rounded-lg px-6 font-bold shadow-lg shadow-primary/20"
                         >
@@ -623,9 +623,9 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
             <div className="space-y-4 overflow-y-auto max-h-[60vh] pr-2 custom-scrollbar">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Task Title</Label>
-                <Input 
+                <Input
                   autoFocus
-                  placeholder="What needs to be done?" 
+                  placeholder="What needs to be done?"
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   className="bg-white/5 border-white/10 rounded-xl h-12 text-sm focus:ring-primary/50"
@@ -634,7 +634,7 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
 
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Description</Label>
-                <textarea 
+                <textarea
                   placeholder="Details about this task..."
                   value={newTaskDesc}
                   onChange={(e) => setNewTaskDesc(e.target.value)}
@@ -658,7 +658,7 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Deadline</Label>
-                  <Input 
+                  <Input
                     type="date"
                     value={newTaskDeadline}
                     onChange={(e) => setNewTaskDeadline(e.target.value)}
@@ -682,9 +682,9 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
               </div>
             </div>
             <DialogFooter>
-              <Button 
+              <Button
                 type="submit"
-                disabled={isSubmitting || !newTaskTitle} 
+                disabled={isSubmitting || !newTaskTitle}
                 className="w-full h-14 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest"
               >
                 {isSubmitting ? "Creating..." : "Initialize Task"}

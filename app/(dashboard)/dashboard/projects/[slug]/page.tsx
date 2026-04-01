@@ -294,7 +294,7 @@ export default function ProjectPage() {
   }
 
   return (
-    <div className="flex-1 min-h-screen bg-[#0A0A0A] flex flex-col animate-in fade-in duration-700 overflow-hidden">
+    <div className="flex-1 h-screen bg-[#0A0A0A] flex flex-col overflow-hidden animate-in fade-in duration-700">
       
       {/* Real-time Notification Alert */}
       {notification && (
@@ -628,7 +628,7 @@ export default function ProjectPage() {
       </header>
 
       {/* Main Area */}
-      <main ref={boardRef} className="flex-1 overflow-auto flex flex-col">
+      <main ref={boardRef} className="flex-1 min-w-0 overflow-hidden flex flex-col">
         {view === 'kanban' && (
           <KanbanBoard tasks={tasks} projectId={project?.id} onTasksChange={setTasks} members={members} />
         )}

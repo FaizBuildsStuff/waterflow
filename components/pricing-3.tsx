@@ -63,7 +63,7 @@ export default function Pricing() {
                 body: JSON.stringify({ productId })
             });
             const data = await res.json();
-            
+
             if (!res.ok) {
                 alert(data.error || 'Checkout failed. Please check the server logs.');
                 return;
@@ -89,7 +89,7 @@ export default function Pricing() {
                         From solo thinkers to high-velocity teams, find the flow that fits your pace.
                     </p>
                 </div>
-                
+
                 {/* Updated grid to 3 columns on larger screens */}
                 <div className="@3xl:grid-cols-3 @3xl:gap-4 mt-12 grid gap-6">
                     {plans.map((plan) => (
@@ -98,10 +98,10 @@ export default function Pricing() {
                             // Assuming your Card component supports these variants
                             variant={plan.highlighted ? 'default' : 'mixed'}
                             className={cn(
-                                'relative flex flex-col justify-between p-6', 
+                                'relative flex flex-col justify-between p-6',
                                 plan.highlighted && 'ring-2 ring-primary'
                             )}>
-                            
+
                             {plan.badge && (
                                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
                                     {plan.badge}
