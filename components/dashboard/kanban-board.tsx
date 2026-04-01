@@ -196,6 +196,7 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
   }, [selectedTask])
 
   const fetchColumns = async () => {
+    if (!projectId) return
     try {
       const res = await fetch(`/api/projects/${projectId}/columns`)
       const data = await res.json()

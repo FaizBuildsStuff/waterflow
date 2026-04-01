@@ -40,3 +40,37 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id: projectId } = await params;
+    const token = req.cookies.get('token')?.value;
+
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const payload = await verifyToken(token);
+    if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const isId = /^\d+$/.test(projectId);
+
+    // Verify current user is the owner of the workspace the project belongs to
+    const [project] = await sql`
+      SELECT p.id FROM projects p
+      JOIN workspaces w ON p.workspace_id = w.id
+      WHERE (
+        ${isId ? sql`p.id = ${parseInt(projectId)}` : sql`p.slug = projectId`}
+      ) AND w.owner_id = ${payload.id}
+    `;
+
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found or unauthorized' }, { status: 404 });
+    }
+
+    // Delete the project (assuming ON DELETE CASCADE for members and tasks)
+    await sql`DELETE FROM projects WHERE id = ${project.id}`;
+
+    return NextResponse.json({ message: 'Project deleted successfully' });
+  } catch (error) {
+    console.error('Project deletion error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

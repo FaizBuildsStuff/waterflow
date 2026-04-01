@@ -13,7 +13,9 @@ import {
   Folder,
   ChevronRight,
   TrendingUp,
-  Loader2
+  Loader2,
+  MoreVertical,
+  Trash2
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -37,6 +39,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -54,6 +62,10 @@ export default function DashboardPage() {
     overdue: 0,
     highlights: []
   })
+  
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [projectToDelete, setProjectToDelete] = useState<any>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,6 +125,25 @@ export default function DashboardPage() {
 
   const handleProjectClick = (slug: string) => {
     router.push(`/dashboard/projects/${slug}`)
+  }
+
+  const handleDeleteProject = async () => {
+    if (!projectToDelete) return
+    setIsDeleting(true)
+    try {
+      const res = await fetch(`/api/projects/${projectToDelete.id}`, {
+        method: 'DELETE'
+      })
+      if (res.ok) {
+        setProjects(projects.filter(p => p.id !== projectToDelete.id))
+        setIsDeleteDialogOpen(false)
+        setProjectToDelete(null)
+      }
+    } catch (err) {
+      console.error('Delete project error:', err)
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   return (
@@ -242,14 +273,37 @@ export default function DashboardPage() {
                   onClick={() => handleProjectClick(project.slug)}
                   className="bg-[#0D0D0D] border-white/5 p-6 rounded-2xl group hover:border-primary/50 transition-all cursor-pointer relative overflow-hidden"
                 >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center text-zinc-400 group-hover:bg-primary/20 group-hover:text-primary transition-all">
-                      <Folder size={20} />
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                      <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center text-zinc-400 group-hover:bg-primary/20 group-hover:text-primary transition-all">
+                        <Folder size={20} />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white">{project.name}</h3>
+                        <p className="text-[10px] text-zinc-500 uppercase tracking-widest">/projects/{project.slug}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-white">{project.name}</h3>
-                      <p className="text-[10px] text-zinc-500 uppercase tracking-widest">/projects/{project.slug}</p>
-                    </div>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button variant="ghost" size="icon" className="size-8 text-zinc-500 hover:text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                          <MoreVertical size={16} />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-[#0D0D0D] border-white/5 text-white">
+                        <DropdownMenuItem 
+                          className="text-red-500 focus:text-red-500 focus:bg-red-500/10 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setProjectToDelete(project)
+                            setIsDeleteDialogOpen(true)
+                          }}
+                        >
+                          <Trash2 size={14} className="mr-2" />
+                          Delete Project
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                   <div className="flex items-center justify-between text-[10px] font-bold text-zinc-600 pt-4 border-t border-white/5">
                     <span>Collaborative</span>
@@ -303,6 +357,40 @@ export default function DashboardPage() {
           value={stats.overdue} 
         />
       </section>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-3xl p-8 max-w-sm">
+          <DialogHeader className="space-y-4">
+            <div className="size-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500">
+              <AlertCircle size={24} />
+            </div>
+            <div>
+              <DialogTitle className="text-xl font-bold">Delete Project?</DialogTitle>
+              <DialogDescription className="text-zinc-500 text-sm">
+                This action is permanent. All tasks and documents in <span className="text-white font-bold">{projectToDelete?.name}</span> will be lost.
+              </DialogDescription>
+            </div>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col gap-3 mt-6">
+            <Button 
+              variant="destructive"
+              className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[11px]"
+              disabled={isDeleting}
+              onClick={handleDeleteProject}
+            >
+              {isDeleting ? "Deleting..." : "Confirm Deletion"}
+            </Button>
+            <Button 
+              variant="ghost"
+              className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[11px] text-zinc-500 hover:text-white"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
     </div>
   )

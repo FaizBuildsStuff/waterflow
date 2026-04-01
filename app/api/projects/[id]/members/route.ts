@@ -60,10 +60,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     // Get all members of the project
     const members = await sql`
-      SELECT u.id, u.name, u.email, u.avatar_url, pm.role 
+      SELECT u.id, u.name, u.email, u.avatar_url, pm.role, pr.name as custom_role_name, pr.color as custom_role_color, pr.id as role_id
       FROM project_members pm
       JOIN users u ON pm.user_id = u.id
       JOIN projects p ON pm.project_id = p.id
+      LEFT JOIN project_roles pr ON pm.role_id = pr.id
       WHERE (
         ${isId ? sql`pm.project_id = ${parseInt(projectId)}` : sql`p.slug = ${projectId}`}
       )
@@ -71,7 +72,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     // Also include the owner
     const [owner] = await sql`
-      SELECT u.id, u.name, u.email, u.avatar_url, 'owner' as role
+      SELECT u.id, u.name, u.email, u.avatar_url, 'owner' as role, null as custom_role_name, null as custom_role_color, null as role_id
       FROM projects p
       JOIN workspaces w ON p.workspace_id = w.id
       JOIN users u ON w.owner_id = u.id
@@ -89,7 +90,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: projectId } = await params;
-    const { userId, role } = await req.json();
+    const { userId, role, roleId } = await req.json();
     const token = req.cookies.get('token')?.value;
 
     if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -117,10 +118,33 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // Update role
+    // Role actions
+    if (role === 'TRANSFER') {
+      const [owner] = await sql`SELECT owner_id FROM projects WHERE id = ${project.id}`;
+      if (owner.owner_id !== payload.id) {
+        return NextResponse.json({ error: 'Only the current owner can transfer ownership' }, { status: 403 });
+      }
+
+      await sql`UPDATE projects SET owner_id = ${userId} WHERE id = ${project.id}`;
+      await sql`INSERT INTO project_members (project_id, user_id, role) VALUES (${project.id}, ${payload.id}, 'member') ON CONFLICT (project_id, user_id) DO UPDATE SET role = 'member'`;
+      await sql`DELETE FROM project_members WHERE project_id = ${project.id} AND user_id = ${userId}`;
+      
+      return NextResponse.json({ message: 'Ownership transferred successfully' });
+    }
+
+    if (role === 'CUSTOM') {
+      await sql`
+        UPDATE project_members 
+        SET role = 'custom', role_id = ${roleId}
+        WHERE project_id = ${project.id} AND user_id = ${userId}
+      `;
+      return NextResponse.json({ message: 'Custom role assigned successfully' });
+    }
+
+    // Standard role update (Admin/Member)
     await sql`
       UPDATE project_members 
-      SET role = ${role} 
+      SET role = ${role}, role_id = NULL
       WHERE project_id = ${project.id} AND user_id = ${userId}
     `;
 

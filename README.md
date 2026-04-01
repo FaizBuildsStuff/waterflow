@@ -1,55 +1,91 @@
-# Waterflow
+<div align="center">
+  <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/droplets.svg" width="80" height="80" alt="Waterflow Logo" />
+  <h1>Waterflow</h1>
+  <p align="center">
+    <strong>The AI-Native OS for High-Performance Agencies.</strong><br />
+    Work that flows like water. Orchestrated by Intelligence.
+  </p>
+  
+  <p align="center">
+    <img src="https://img.shields.io/badge/Next.js-16.2-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/Tailwind-v4-38bdf8?style=for-the-badge&logo=tailwind-css" alt="Tailwind" />
+    <img src="https://img.shields.io/badge/GSAP-Premium-88ce02?style=for-the-badge&logo=greensock" alt="GSAP" />
+    <img src="https://img.shields.io/badge/PostgreSQL-Neon-336791?style=for-the-badge&logo=postgresql" alt="Postgres" />
+  </p>
+</div>
 
-AI-powered productivity SaaS for agencies. Work that flows like water.
+---
 
-## Tech Stack
+## 🌊 The Philosophy of Flow
 
-- **Framework**: Next.js 16.2.0 (App Router, Turbopack)
-- **Database**: PostgreSQL (NeonDB)
-- **Auth**: Custom JWT with `jose` (Edge-compatible)
-- **Styling**: Tailwind CSS v4 + Shadcn UI
-- **AI**: OpenAI (ChatGPT API - GPT-4o mini)
-- **Animations**: GSAP + ScrollTrigger
-- **DND**: `@dnd-kit` for interactive boards
+In high-stakes agency environments, friction is the enemy of excellence. **Waterflow** is engineered to eliminate the "organizing" tax. Built with a fluid design language and an AI-first heartbeat, it transforms complex project management into a seamless, continuous stream of productivity.
 
-## Key Features
+> [!IMPORTANT]
+> **Waterflow is currently in Private Beta.** It is built for agencies that demand high-fidelity visuals, real-time collaboration, and AI-assisted task decomposition.
 
-- **Collaborative Workspaces**: Invite team members and share projects in real-time.
-- **Slug-based URLs**: Clean, readable project paths (e.g., `/projects/website-redesign`).
-- **Multi-View Dashboard**: Switch between Kanban, List, Timeline, and Wireframe views.
-- **AI Task Mastery**: Generate subtasks and comprehensive descriptions directly with AI.
-- **Unified "My Tasks"**: See all your assignments across multiple projects in one place.
-- **Live Roadmap & Polling**: Timeline views with real-time sync and live UI updates across users.
-- **Task Discussions**: Integrated commenting system for seamless team communication.
-- **Collaborative Wireframing**: Generate and iterate on UI wireframes directly in the project dashboard.
-- **Professional Agency Theme**: High-contrast dark mode with glassmorphism and modern typography.
+---
 
-## Getting Started
+## 💎 Elite Feature Suite
 
-### Prerequisites
+### ⚡ Intelligence-Driven Execution
+- **Recursive Decomposition**: Turn any high-level objective into 8+ actionable, estimated subtasks with one click.
+- **Contextual Copilot**: Generate professional task descriptions and scope of work using GPT-4o.
+- **Smart Digests**: Stay ahead with AI-generated project summaries and daily trajectory analysis.
 
-- Node.js 18+
-- NeonDB Database (PostgreSQL)
-- OpenAI API Key
-- JWT_SECRET
+### 🎨 Premium Team Governance
+- **Custom Identity Roles**: Define roles like "Lead Creative" or "Senior Strategist" with custom hex-code colors.
+- **Ownership Sovereignty**: Securely transfer project ownership with automatic role demotion to maintain strict hierarchy.
+- **Real-Time Synergy**: Live polling and notifications ensure every team member is synced to the millisecond.
 
-### Installation
+### 🕹️ Unified Multi-Dimensional Views
+- **Kanban Flow**: A high-performance drag-and-drop board for agile sprints.
+- **Dynamic Timeline**: A GSAP-powered roadmap for high-level project trajectory.
+- **Wireframe Studio**: An integrated board for lo-fi prototyping directly within your workspace.
+- **Dense List**: For the analytical power user who needs high-density data management.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-repo/waterflow.git
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Set up environment variables in `.env`:
-   ```env
-   DATABASE_URL="your-neondb-url"
-   JWT_SECRET="your-secret"
-   CHATGPT_API="your-openai-key"
-   ```
-4. Run the development server (Turbopack):
-   ```bash
-   npm run dev
-   ```
+---
+
+## 🛠️ Technical Excellence
+
+| Layer | Premium Stack |
+| :--- | :--- |
+| **Foundation** | Next.js 16.2.0 (App Router + Turbopack Execution) |
+| **Database** | Neon PostgreSQL (Edge-Aware, High Availability) |
+| **Authentication** | Secure JWT with `jose` (Edge-compatible, HttpOnly) |
+| **Sensory Layer** | GSAP Motion Engine + Tailwind v4 + Shadcn/ui |
+| **AI Brain** | OpenAI GPT-4o mini (Fine-tuned for Task Logic) |
+
+---
+
+## 🚀 Deployment Guide
+
+### Environment Configuration
+Create a `.env` file with your agency-grade credentials:
+
+```env
+# Core Infrastructure
+DATABASE_URL="postgres://..."
+JWT_SECRET="BillionDollarSecret..."
+
+# Intelligence Layer
+CHATGPT_API="sk-..."
+
+# Network Layer
+NEXT_PUBLIC_URL="http://localhost:3000"
+```
+
+### Initialization
+```bash
+# Install dependencies
+npm install
+
+# Build & Run with Turbopack acceleration
+npm run dev
+```
+
+---
+
+<div align="center">
+  <sub>Built with precision by the Waterflow Engineering Team.</sub><br />
+  <sub>&copy; 2026 Waterflow Inc. All rights reserved.</sub>
+</div>
