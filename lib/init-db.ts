@@ -1,7 +1,7 @@
-import sql from './db';
+import sql from "./db";
 
 async function initDb() {
-  console.log('Initializing database...');
+  console.log("Initializing database...");
   try {
     // Create Users table
     await sql`
@@ -15,7 +15,7 @@ async function initDb() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
-    console.log('Users table created or exists.');
+    console.log("Users table created or exists.");
 
     // Create Workspaces table
     await sql`
@@ -28,7 +28,7 @@ async function initDb() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
-    console.log('Workspaces table created or exists.');
+    console.log("Workspaces table created or exists.");
 
     // Create Projects table
     await sql`
@@ -39,7 +39,7 @@ async function initDb() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
-    console.log('Projects table created or exists.');
+    console.log("Projects table created or exists.");
 
     // Update Tasks table with metadata
     await sql`
@@ -56,7 +56,7 @@ async function initDb() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
-    console.log('Tasks table updated or exists.');
+    console.log("Tasks table updated or exists.");
 
     // Create Kanban Columns table
     await sql`
@@ -69,7 +69,7 @@ async function initDb() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
-    console.log('Kanban Columns table created or exists.');
+    console.log("Kanban Columns table created or exists.");
 
     // Create Docs table
     await sql`
@@ -84,7 +84,7 @@ async function initDb() {
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
-    console.log('Docs table created or exists.');
+    console.log("Docs table created or exists.");
 
     // Create Project Members table (for sharing)
     await sql`
@@ -97,7 +97,7 @@ async function initDb() {
         UNIQUE(project_id, user_id)
       );
     `;
-    console.log('Project Members table created or exists.');
+    console.log("Project Members table created or exists.");
 
     // Create Comments table
     await sql`
@@ -109,43 +109,85 @@ async function initDb() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `;
-    console.log('Comments table created or exists.');
+    console.log("Comments table created or exists.");
+    
+    // Create Wireframes table
+    await sql`
+      CREATE TABLE IF NOT EXISTS wireframes (
+        id SERIAL PRIMARY KEY,
+        project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+        elements JSONB DEFAULT '[]',
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(project_id)
+      );
+    `;
+    console.log("Wireframes table created or exists.");
+
+    // Create Wireframe Logs table
+    await sql`
+      CREATE TABLE IF NOT EXISTS wireframe_logs (
+        id SERIAL PRIMARY KEY,
+        project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        action TEXT NOT NULL,
+        details TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    console.log("Wireframe Logs table created or exists.");
 
     // Migration logic to add columns if they don't exist
     const migrateDb = async () => {
       // Migrate Tasks
-      const taskCols = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks'`;
-      const taskNames = taskCols.map(c => c.column_name);
-      if (!taskNames.includes('description')) await sql`ALTER TABLE tasks ADD COLUMN description TEXT;`;
-      
+      const taskCols =
+        await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks'`;
+      const taskNames = taskCols.map((c) => c.column_name);
+      if (!taskNames.includes("description"))
+        await sql`ALTER TABLE tasks ADD COLUMN description TEXT;`;
+
       // Migrate Users
-      const userCols = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'users'`;
-      if (!userCols.map(c => c.column_name).includes('avatar_url')) {
+      const userCols =
+        await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'users'`;
+      if (!userCols.map((c) => c.column_name).includes("avatar_url")) {
         await sql`ALTER TABLE users ADD COLUMN avatar_url TEXT;`;
       }
 
-      if (!taskNames.includes('priority')) await sql`ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'Medium';`;
-      if (!taskNames.includes('assignee_id')) await sql`ALTER TABLE tasks ADD COLUMN assignee_id INTEGER;`;
-      if (!taskNames.includes('due_date')) await sql`ALTER TABLE tasks ADD COLUMN due_date TIMESTAMP WITH TIME ZONE;`;
-      if (!taskNames.includes('subtasks')) await sql`ALTER TABLE tasks ADD COLUMN subtasks JSONB DEFAULT '[]';`;
+      if (!taskNames.includes("priority"))
+        await sql`ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'Medium';`;
+      if (!taskNames.includes("assignee_id"))
+        await sql`ALTER TABLE tasks ADD COLUMN assignee_id INTEGER;`;
+      if (!taskNames.includes("due_date"))
+        await sql`ALTER TABLE tasks ADD COLUMN due_date TIMESTAMP WITH TIME ZONE;`;
+      if (!taskNames.includes("subtasks"))
+        await sql`ALTER TABLE tasks ADD COLUMN subtasks JSONB DEFAULT '[]';`;
 
       // Migrate Projects
-      const projectCols = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'projects'`;
-      if (!projectCols.map(c => c.column_name).includes('slug')) {
+      const projectCols =
+        await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'projects'`;
+      if (!projectCols.map((c) => c.column_name).includes("slug")) {
         await sql`ALTER TABLE projects ADD COLUMN slug TEXT UNIQUE;`;
         // Generate slugs for existing projects
-        const projects = await sql`SELECT id, name FROM projects WHERE slug IS NULL`;
+        const projects =
+          await sql`SELECT id, name FROM projects WHERE slug IS NULL`;
         for (const p of projects) {
-          const slug = p.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + p.id;
+          const slug =
+            p.name
+              .toLowerCase()
+              .replace(/ /g, "-")
+              .replace(/[^\w-]+/g, "") +
+            "-" +
+            p.id;
           await sql`UPDATE projects SET slug = ${slug} WHERE id = ${p.id}`;
         }
       }
       // Migrate Kanban Columns
-      const kanbanColsTable = await sql`SELECT 1 FROM information_schema.tables WHERE table_name = 'kanban_columns'`;
+      const kanbanColsTable =
+        await sql`SELECT 1 FROM information_schema.tables WHERE table_name = 'kanban_columns'`;
       if (kanbanColsTable.length > 0) {
         const projects = await sql`SELECT id FROM projects`;
         for (const p of projects) {
-          const [exists] = await sql`SELECT 1 FROM kanban_columns WHERE project_id = ${p.id} LIMIT 1`;
+          const [exists] =
+            await sql`SELECT 1 FROM kanban_columns WHERE project_id = ${p.id} LIMIT 1`;
           if (!exists) {
             await sql`
               INSERT INTO kanban_columns (project_id, title, color, position)
@@ -161,9 +203,9 @@ async function initDb() {
     };
     await migrateDb();
 
-    console.log('Database initialization complete.');
+    console.log("Database initialization complete.");
   } catch (error) {
-    console.error('Error initializing database:', error);
+    console.error("Error initializing database:", error);
   } finally {
     process.exit(0);
   }

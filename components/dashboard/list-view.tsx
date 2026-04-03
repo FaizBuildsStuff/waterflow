@@ -1,10 +1,10 @@
 'use client'
 
 import React from 'react'
-import { 
-  MoreHorizontal, 
-  Clock, 
-  MessageSquare, 
+import {
+  MoreHorizontal,
+  Clock,
+  MessageSquare,
   CheckSquare,
   AlertCircle,
   Calendar,
@@ -72,8 +72,8 @@ export const ListView = ({ tasks, onTaskClick }: ListViewProps) => {
           </TableHeader>
           <TableBody>
             {tasks.map((task) => (
-              <TableRow 
-                key={task.id} 
+              <TableRow
+                key={task.id}
                 className="border-white/5 hover:bg-white/5 cursor-pointer group transition-colors"
                 onClick={() => onTaskClick(task)}
               >

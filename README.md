@@ -25,6 +25,22 @@ In high-stakes agency environments, friction is the enemy of excellence. **Water
 
 ---
 
+## 📈 Recent Orchestrations
+
+### 1. Task Management Enhancements
+The Project Dashboard now features a unified task management experience:
+- **Real-time Search**: Filtering tasks by title across all views (Kanban, List, Timeline).
+- **Functional List View**: Status management via a modern dropdown and full detail view integration.
+- **Shared Detail View**: Task comments and AI breakdown are now accessible from any tab in the project space.
+
+### 2. AI Wireframe Designer
+The Wireframe tab has been rebuilt as an interactive, persistent design environment:
+- **Interactive Canvas**: Drag-and-drop elements (Boxes, Text, Buttons, Images) with real-time property inspection.
+- **Persistence**: All designs are saved to the Neon database, enabling instantaneous team collaboration.
+- **Activity History**: A dedicated "History" tab in the designer sidebar shows real-time logs of who added, moved, or edited elements.
+
+---
+
 ## 💎 Elite Feature Suite
 
 ### ⚡ Intelligence-Driven Execution
