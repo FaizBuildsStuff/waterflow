@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Check, Zap, Shield, Loader2, Sparkles, AlertCircle, ArrowRight } from 'lucide-react'
+import { Check, Zap, Shield, Loader2, Sparkles, AlertCircle, ArrowRight, CreditCard } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import Pricing from '@/components/pricing-3'
 import { cn } from '@/lib/utils'
@@ -35,9 +35,16 @@ export default function BillingPage() {
 
   return (
     <div className="flex-1 p-8 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="space-y-2">
-        <h1 className="text-4xl font-black text-white tracking-tight uppercase">Strategic Billing</h1>
-        <p className="text-zinc-500 font-medium">Manage your cognitive capacity and workspace tier.</p>
+      <div className="space-y-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+            <CreditCard size={12} className="animate-pulse" /> Billing Verified
+        </div>
+        <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white/95 leading-[0.9]">
+            Plan & Billing<span className="text-primary">.</span>
+        </h1>
+        <p className="text-zinc-500 text-lg font-medium max-w-xl">
+             Manage your project capacity, subscriptions, and payment methods.
+        </p>
       </div>
 
       {/* Current Plan Summary (Prominent & Centered) */}
@@ -50,7 +57,7 @@ export default function BillingPage() {
           <div className="space-y-1">
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Subscription Status</span>
             <div className="flex items-center gap-3">
-              <h3 className="text-2xl font-bold text-white capitalize">{user?.subscriptionTier || 'Free'} Tier</h3>
+              <h3 className="text-2xl font-bold text-white capitalize">{user?.subscriptionTier || 'Free'} Plan</h3>
               <Badge className={cn(
                 "uppercase text-[9px] font-black",
                 isTrialing ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : 
@@ -64,7 +71,7 @@ export default function BillingPage() {
 
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider">
-              <span className="text-zinc-500">AI Capacity Consumption</span>
+              <span className="text-zinc-500">Project AI Usage</span>
               <span className="text-white">{user?.aiUsageCount || 0} / {isFree ? 5 : '∞'}</span>
             </div>
             <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
@@ -77,10 +84,10 @@ export default function BillingPage() {
 
           <div className="pt-4 flex flex-col sm:flex-row gap-3">
             <Button
-              className="flex-1 bg-white text-black hover:bg-zinc-200 rounded-xl h-12 text-[10px] font-black uppercase tracking-widest gap-2"
+              className="flex-1 bg-white text-black hover:bg-zinc-200 rounded-xl h-12 text-[10px] font-black uppercase tracking-widest gap-2 shadow-lg transition-all active:scale-95"
               onClick={() => window.open('https://polar.sh/dashboard/subscriptions', '_blank')}
             >
-              Subscription Management
+              Manage Subscription
               <ArrowRight size={14} />
             </Button>
           </div>
@@ -88,14 +95,14 @@ export default function BillingPage() {
           {isTrialing && !trialExpired && (
             <div className="flex items-center gap-2 p-4 rounded-xl bg-primary/5 border border-primary/10 text-[10px] font-bold uppercase tracking-widest text-primary animate-pulse">
               <Zap size={14} />
-              Evaluation Period Ends: {trialEnds?.toLocaleDateString()}
+              Trial ends in: {trialEnds?.toLocaleDateString()}
             </div>
           )}
 
           {trialExpired && (
             <div className="flex items-center gap-2 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-[10px] font-bold uppercase tracking-widest text-red-500">
               <AlertCircle size={14} />
-              Lapsed: Complete setup to resume Neural operations
+              Trial Expired: Please upgrade your plan to continue using all features.
             </div>
           )}
         </Card>

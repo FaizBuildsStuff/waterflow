@@ -13,7 +13,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     // Verify task access
     const [task] = await sql`
-      SELECT t.*, p.id as project_id 
+      SELECT t.id, t.title, t.description, t.status, t.priority, t.due_date, t.assignee_id, t.project_id, t.created_at, t.blocked_by_ids, t.subtasks 
       FROM tasks t
       JOIN projects p ON t.project_id = p.id
       WHERE t.id = ${taskId}

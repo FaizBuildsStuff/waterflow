@@ -51,15 +51,24 @@ export default function TeamPage() {
 
   return (
     <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[#050505]">
-      <header className="h-24 flex items-center justify-between px-8 border-b border-white/5 bg-[#0A0A0A]/50 backdrop-blur-3xl sticky top-0 z-20">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-black text-white tracking-widest uppercase italic">Team Management</h1>
-          <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Collaborators and Invitations</p>
+      <header className="px-8 pt-12 pb-8 border-b border-white/5 bg-[#0A0A0A]/50 backdrop-blur-3xl sticky top-0 z-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+              <Users size={12} className="animate-pulse" /> Team Active
+            </div>
+            <h1 className="text-6xl md:text-7xl font-black tracking-tighter text-white/95 leading-[0.9]">
+              Team Members<span className="text-primary">.</span>
+            </h1>
+            <p className="text-zinc-500 text-lg font-medium max-w-xl">
+               Manage your team, collaborate on projects, and invite new members to your workspace.
+            </p>
+          </div>
+          <Button className="bg-white text-black hover:bg-zinc-200 gap-3 h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-white/5 transition-all active:scale-95 group">
+            <UserPlus size={18} className="group-hover:scale-110 transition-transform" />
+            Invite Member
+          </Button>
         </div>
-        <Button className="bg-white text-black hover:bg-zinc-200 gap-3 h-11 px-6 rounded-xl font-bold shadow-xl shadow-white/5 transition-all active:scale-95">
-          <UserPlus size={18} />
-          Invite Member
-        </Button>
       </header>
 
       <ScrollArea className="flex-1">
@@ -67,7 +76,7 @@ export default function TeamPage() {
           {/* Active Members Section */}
           <section className="space-y-6">
             <div className="flex items-center justify-between px-2">
-              <h2 className="text-sm font-black uppercase tracking-[0.3em] text-zinc-500">Active Collaborators</h2>
+              <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-500">Active Members</h2>
               <Badge variant="outline" className="bg-primary/5 border-primary/10 text-primary text-[10px] px-3 font-black">
                 {members.length} Members
               </Badge>
@@ -97,7 +106,7 @@ export default function TeamPage() {
 
                     <div className="pt-4 border-t border-white/5 flex items-center justify-between">
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Assigned To</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Working On</p>
                         <p className="text-xs font-bold text-zinc-400 italic">{member.project_name}</p>
                       </div>
                       <button className="text-zinc-600 hover:text-white transition-colors">

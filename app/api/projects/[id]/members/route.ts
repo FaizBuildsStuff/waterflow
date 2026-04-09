@@ -176,8 +176,13 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 });
 
-    if (project.owner_id !== payload.id) {
-      return NextResponse.json({ error: 'Only owner can remove members' }, { status: 403 });
+    if (!project) return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+
+    // Allow removal if: 
+    // 1. Current user is project owner
+    // 2. Current user is removing themselves (stopping collaboration)
+    if (project.owner_id !== payload.id && userId !== payload.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     await sql`DELETE FROM project_members WHERE project_id = ${project.id} AND user_id = ${userId}`;

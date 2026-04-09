@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    const { title, project_id, status, priority, description, due_date, assignee_id } = await req.json();
+    const { title, project_id, status, priority, description, due_date, assignee_id, blocked_by_ids } = await req.json();
 
     if (!title || !project_id) {
       return NextResponse.json({ error: 'Title and project_id are required' }, { status: 400 });
@@ -34,9 +34,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Project not found or unauthorized' }, { status: 404 });
     }
 
-    // Create task
     const [task] = await sql`
-      INSERT INTO tasks (title, project_id, status, priority, description, due_date, assignee_id)
+      INSERT INTO tasks (title, project_id, status, priority, description, due_date, assignee_id, blocked_by_ids)
       VALUES (
         ${title}, 
         ${project_id}, 
@@ -44,7 +43,8 @@ export async function POST(req: NextRequest) {
         ${priority || 'Medium'}, 
         ${description || ''}, 
         ${due_date || null}, 
-        ${assignee_id || null}
+        ${assignee_id || null},
+        ${blocked_by_ids || []}
       )
       RETURNING *
     `;
@@ -70,7 +70,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    const { id, status, title, description, priority, due_date, assignee_id, subtasks } = await req.json();
+    const { id, status, title, description, priority, due_date, assignee_id, subtasks, blocked_by_ids } = await req.json();
 
     if (!id) {
       return NextResponse.json({ error: 'Task ID is required' }, { status: 400 });
@@ -78,7 +78,7 @@ export async function PATCH(req: NextRequest) {
 
     // Verify task access
     const [taskCheck] = await sql`
-      SELECT t.id, p.id as project_id, w.owner_id
+      SELECT t.id, t.project_id, w.owner_id
       FROM tasks t
       JOIN projects p ON t.project_id = p.id
       JOIN workspaces w ON p.workspace_id = w.id
@@ -109,7 +109,8 @@ export async function PATCH(req: NextRequest) {
         priority = ${priority === undefined ? sql`priority` : priority},
         due_date = ${due_date === undefined ? sql`due_date` : due_date},
         assignee_id = ${assignee_id === undefined ? sql`assignee_id` : assignee_id},
-        subtasks = ${subtasks === undefined ? sql`subtasks` : subtasks}
+        subtasks = ${subtasks === undefined ? sql`subtasks` : subtasks},
+        blocked_by_ids = ${blocked_by_ids === undefined ? sql`blocked_by_ids` : (blocked_by_ids || [])}
       WHERE id = ${id}
       RETURNING *
     `;
@@ -130,7 +131,7 @@ export async function GET(req: NextRequest) {
 
     // "My Tasks" - Get all tasks assigned to me or in projects I own
     const tasks = await sql`
-      SELECT t.*, p.name as project_name, p.slug as project_slug
+      SELECT t.id, t.title, t.description, t.status, t.priority, t.due_date, t.assignee_id, t.project_id, t.created_at, t.blocked_by_ids, t.subtasks, p.name as project_name, p.slug as project_slug
       FROM tasks t
       JOIN projects p ON t.project_id = p.id
       JOIN workspaces w ON p.workspace_id = w.id

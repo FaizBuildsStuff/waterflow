@@ -44,6 +44,7 @@ export default function RootLayout({
       <body
         className="min-h-full flex flex-col bg-background text-foreground transition-colors duration-300"
         style={{ fontFamily: "'Satoshi', sans-serif", fontWeight: 401 }}
+        suppressHydrationWarning
       >
         <ThemeProvider
           attribute="class"

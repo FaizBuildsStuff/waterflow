@@ -22,7 +22,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     // Get tasks for project, verified by workspace ownership OR project membership
     const tasks = await sql`
-      SELECT t.* FROM tasks t
+      SELECT t.id, t.title, t.description, t.status, t.priority, t.due_date, t.assignee_id, t.project_id, t.created_at, t.blocked_by_ids, t.subtasks FROM tasks t
       JOIN projects p ON t.project_id = p.id
       JOIN workspaces w ON p.workspace_id = w.id
       LEFT JOIN project_members pm ON p.id = pm.project_id AND pm.user_id = ${payload.id}

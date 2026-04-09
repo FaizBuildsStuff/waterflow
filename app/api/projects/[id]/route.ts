@@ -74,3 +74,38 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id: projectId } = await params;
+    const { name } = await req.json();
+    const token = req.cookies.get('token')?.value;
+
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const payload = await verifyToken(token);
+    if (!payload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const isId = /^\d+$/.test(projectId);
+
+    // Verify current user is owner of the workspace or admin of the project
+    const [project] = await sql`
+      SELECT p.id, w.owner_id FROM projects p
+      JOIN workspaces w ON p.workspace_id = w.id
+      WHERE (
+        ${isId ? sql`p.id = ${parseInt(projectId)}` : sql`p.slug = ${projectId}`}
+      ) AND w.owner_id = ${payload.id}
+    `;
+
+    if (!project) return NextResponse.json({ error: 'Project not found or unauthorized' }, { status: 404 });
+
+    // Update project
+    const [updatedProject] = await sql`
+      UPDATE projects SET name = ${name} WHERE id = ${project.id} RETURNING *
+    `;
+
+    return NextResponse.json({ project: updatedProject });
+  } catch (error) {
+    console.error('Project update error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

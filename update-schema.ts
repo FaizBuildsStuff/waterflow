@@ -1,4 +1,4 @@
-import sql from './lib/db.ts';
+import sql from './lib/db';
 
 async function main() {
   console.log('Ensuring project_roles table exists...');
@@ -19,6 +19,12 @@ async function main() {
     const memberCols = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'project_members'`;
     if (!memberCols.map((c: any) => c.column_name).includes("role_id")) {
       await sql`ALTER TABLE project_members ADD COLUMN role_id INTEGER REFERENCES project_roles(id) ON DELETE SET NULL;`;
+    }
+
+    console.log('Ensuring blocked_by_ids exists in tasks...');
+    const taskCols = await sql`SELECT column_name FROM information_schema.columns WHERE table_name = 'tasks'`;
+    if (!taskCols.map((c: any) => c.column_name).includes("blocked_by_ids")) {
+      await sql`ALTER TABLE tasks ADD COLUMN blocked_by_ids INTEGER[] DEFAULT '{}';`;
     }
 
     console.log('Database schema is up to date.');

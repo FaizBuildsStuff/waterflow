@@ -50,10 +50,17 @@ export default function SettingsPage() {
 
   return (
     <div className="flex-1 flex flex-col h-screen overflow-hidden bg-[#050505]">
-      <header className="h-24 flex items-center justify-between px-8 border-b border-white/5 bg-[#0A0A0A]/50 backdrop-blur-3xl sticky top-0 z-20">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-black text-white tracking-widest uppercase italic">Console settings</h1>
-          <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Architect your workspace environment</p>
+      <header className="px-8 pt-12 pb-8 border-b border-white/5 bg-[#0A0A0A]/50 backdrop-blur-3xl sticky top-0 z-20">
+        <div className="space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+            <SettingsIcon size={12} className="animate-pulse" /> Preferences
+          </div>
+          <h1 className="text-6xl md:text-7xl font-black tracking-tighter text-white/95 leading-[0.9]">
+            Settings<span className="text-primary">.</span>
+          </h1>
+          <p className="text-zinc-500 text-lg font-medium max-w-xl">
+             Customize your personal profile and workspace configuration.
+          </p>
         </div>
       </header>
 
@@ -88,8 +95,8 @@ export default function SettingsPage() {
               <Zap size={20} className="text-primary" />
               <span className="text-xs font-black uppercase tracking-widest text-white">Agency Pro Plan</span>
             </div>
-            <p className="text-[11px] text-zinc-400 leading-relaxed font-medium">Unlock unlimited projects, AI collaborators, and advanced timeline views.</p>
-            <Button className="w-full bg-white text-black hover:bg-zinc-200 rounded-xl font-black text-[10px] h-10 uppercase tracking-widest">Upgrade Now</Button>
+            <p className="text-[11px] text-zinc-400 leading-relaxed font-medium">Unlock unlimited projects, team collaborators, and advanced timeline views.</p>
+            <Button className="w-full bg-white text-black hover:bg-zinc-200 rounded-xl font-black text-[10px] h-10 uppercase tracking-widest shadow-xl transition-all active:scale-95">Upgrade Plan</Button>
           </div>
         </aside>
 
@@ -100,7 +107,7 @@ export default function SettingsPage() {
               {activeTab === 'profile' && (
                 <div className="space-y-12">
                   <div className="space-y-6">
-                    <h2 className="text-sm font-black uppercase tracking-[0.4em] text-zinc-500">Identity Structure</h2>
+                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-500">Profile Information</h2>
                     <div className="flex items-center gap-8">
                       <div className="relative group">
                         <div className="size-24 rounded-full bg-linear-to-br from-primary to-blue-600 flex items-center justify-center text-4xl font-black text-white shadow-2xl shadow-primary/20">
@@ -145,7 +152,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="flex justify-end gap-4">
                       <Button variant="ghost" className="text-zinc-500 hover:text-white rounded-xl px-8 h-12 font-bold uppercase tracking-widest text-[10px]">Cancel</Button>
-                      <Button className="bg-white text-black hover:bg-zinc-200 rounded-xl px-12 h-12 font-black uppercase tracking-widest text-[10px] shadow-xl shadow-white/5">Update Core</Button>
+                      <Button className="bg-white text-black hover:bg-zinc-200 rounded-xl px-12 h-12 font-black uppercase tracking-widest text-[10px] shadow-xl shadow-white/5 active:scale-95 transition-all">Save Changes</Button>
                     </div>
                   </form>
                 </div>
@@ -154,7 +161,7 @@ export default function SettingsPage() {
               {activeTab === 'billing' && (
                 <div className="h-96 flex flex-col items-center justify-center gap-6 border-2 border-dashed border-white/5 rounded-[40px] opacity-40">
                   <CreditCard size={48} className="text-zinc-600" />
-                  <p className="text-sm font-black uppercase tracking-[0.3em] text-zinc-500">Billing infrastructure loading...</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Billing details loading...</p>
                 </div>
               )}
             </div>

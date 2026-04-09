@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     // Get tasks assigned to the user or created by the user
     // Include project name for context
     const tasks = await sql`
-      SELECT t.*, p.name as project_name 
+      SELECT t.id, t.title, t.description, t.status, t.priority, t.due_date, t.assignee_id, t.project_id, t.created_at, t.blocked_by_ids, t.subtasks, p.name as project_name 
       FROM tasks t
       JOIN projects p ON t.project_id = p.id
       JOIN workspaces w ON p.workspace_id = w.id

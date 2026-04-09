@@ -111,6 +111,13 @@ export default function ProjectPage() {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [isDescGenerating, setIsDescGenerating] = useState(false)
 
+  // View & Filter States
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterPriority, setFilterPriority] = useState<string>('all')
+  const [filterAssignee, setFilterAssignee] = useState<string>('all')
+  const [groupBy, setGroupBy] = useState<'status' | 'priority' | 'assignee'>('status')
+  const [focusMode, setFocusMode] = useState(false)
+
   // Notifications
   const [notification, setNotification] = useState<{ title: string, desc: string } | null>(null)
 
@@ -332,7 +339,7 @@ export default function ProjectPage() {
     return (
       <div className="flex-1 bg-[#0A0A0A] p-8 flex flex-col items-center justify-center space-y-4">
         <div className="size-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-        <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Syncing Workspace...</p>
+        <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Loading Project Details...</p>
       </div>
     )
   }
@@ -354,25 +361,29 @@ export default function ProjectPage() {
       )}
 
       {/* Project Header */}
-      <header ref={headerRef} className="border-b border-white/5 px-8 py-6 bg-[#0D0D0D]/50 backdrop-blur-xl sticky top-0 z-40">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-white tracking-tight">{project?.name}</h1>
-              <Badge className="bg-green-500/10 text-green-500 border-none px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-green-500/5">Agency Active</Badge>
+      <header ref={headerRef} className="border-b border-white/5 px-8 pt-12 pb-8 bg-[#0D0D0D]/50 backdrop-blur-xl sticky top-0 z-40">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+              <Sparkles size={12} className="animate-pulse" /> Project Active
             </div>
-            <div className="flex items-center gap-6 text-[11px] font-medium text-zinc-500">
+            
+            <h1 className="text-6xl md:text-7xl font-black tracking-tighter text-white/95 leading-[0.9]">
+              {project?.name}<span className="text-primary">.</span>
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-6 text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500">
               <div className="flex items-center gap-2">
-                <Calendar size={14} className="text-primary" />
-                <span>Slug: /projects/{slug}</span>
+                <Calendar size={14} className="text-primary/60" />
+                <span>/projects/{slug}</span>
               </div>
               <div className="flex items-center gap-2">
-                <UsersIcon size={14} className="text-primary" />
-                <span>{members.length} Collaborators</span>
+                <UsersIcon size={14} className="text-primary/60" />
+                <span>{members.length} Members</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-primary animate-pulse" />
-                <span>Live Sync Enabled</span>
+                <div className="size-2 rounded-full bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)] animate-pulse" />
+                <span>Sync Active</span>
               </div>
             </div>
           </div>
@@ -411,9 +422,9 @@ export default function ProjectPage() {
                           <UsersIcon size={28} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <DialogTitle className="text-2xl font-bold tracking-tight mb-1 truncate">Team Hub</DialogTitle>
-                          <DialogDescription className="text-zinc-500 text-xs font-medium uppercase tracking-wider truncate">
-                            {members.length} Active Collaborators
+                          <DialogTitle className="text-2xl font-bold tracking-tight mb-1 truncate">Team Management</DialogTitle>
+                          <DialogDescription className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em] truncate">
+                            {members.length} Active Members
                           </DialogDescription>
                         </div>
                       </DialogHeader>
@@ -444,23 +455,23 @@ export default function ProjectPage() {
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                       <button className="focus:outline-none">
-                                        <Badge 
-                                          variant="outline" 
+                                        <Badge
+                                          variant="outline"
                                           style={member.custom_role_color ? { borderColor: `${member.custom_role_color}40`, color: member.custom_role_color, backgroundColor: `${member.custom_role_color}10` } : {}}
                                           className={cn("px-2 py-0.5 text-[9px] font-bold uppercase tracking-tighter cursor-pointer hover:bg-white/10 transition-colors",
-                                          !member.custom_role_color && (member.role === 'owner' ? "bg-primary/10 text-primary border-primary/20" :
-                                            member.role === 'admin' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : "bg-zinc-500/5 text-zinc-400 border-white/10")
-                                        )}>
+                                            !member.custom_role_color && (member.role === 'owner' ? "bg-primary/10 text-primary border-primary/20" :
+                                              member.role === 'admin' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : "bg-zinc-500/5 text-zinc-400 border-white/10")
+                                          )}>
                                           {member.custom_role_name || member.role}
                                         </Badge>
                                       </button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="bg-[#0D0D0D] border-white/10 text-white w-48">
                                       <h4 className="px-2 py-1.5 text-[9px] font-black uppercase tracking-widest text-zinc-500">Actions for {member.name}</h4>
-                                      
+
                                       {/* Only Owner can transfer ownership */}
                                       {members.find(m => m.id === currentUser?.id)?.role === 'owner' && (
-                                        <DropdownMenuItem 
+                                        <DropdownMenuItem
                                           className="text-primary focus:text-primary focus:bg-primary/10 cursor-pointer"
                                           onClick={() => handleUpdateMemberRole(member.id, 'TRANSFER')}
                                         >
@@ -471,7 +482,7 @@ export default function ProjectPage() {
 
                                       <DropdownMenuSeparator className="bg-white/5" />
 
-                                      <DropdownMenuItem 
+                                      <DropdownMenuItem
                                         className="cursor-pointer"
                                         onClick={() => handleUpdateMemberRole(member.id, 'admin')}
                                       >
@@ -479,7 +490,7 @@ export default function ProjectPage() {
                                         Make Admin
                                       </DropdownMenuItem>
 
-                                      <DropdownMenuItem 
+                                      <DropdownMenuItem
                                         className="cursor-pointer"
                                         onClick={() => handleUpdateMemberRole(member.id, 'member')}
                                       >
@@ -493,7 +504,7 @@ export default function ProjectPage() {
                                         <>
                                           <h4 className="px-2 py-1.5 text-[9px] font-black uppercase tracking-widest text-zinc-500">Project Roles</h4>
                                           {projectRoles.map(r => (
-                                            <DropdownMenuItem 
+                                            <DropdownMenuItem
                                               key={r.id}
                                               className="cursor-pointer"
                                               onClick={() => handleUpdateMemberRole(member.id, 'CUSTOM', r.id)}
@@ -506,7 +517,7 @@ export default function ProjectPage() {
                                         </>
                                       )}
 
-                                      <DropdownMenuItem 
+                                      <DropdownMenuItem
                                         className="text-red-500 focus:text-red-500 focus:bg-red-500/10 cursor-pointer"
                                         onClick={() => { setMemberToRemove(member); setIsRemoveMemberOpen(true); }}
                                       >
@@ -516,13 +527,13 @@ export default function ProjectPage() {
                                     </DropdownMenuContent>
                                   </DropdownMenu>
                                 ) : (
-                                  <Badge 
-                                    variant="outline" 
+                                  <Badge
+                                    variant="outline"
                                     style={member.custom_role_color ? { borderColor: `${member.custom_role_color}40`, color: member.custom_role_color, backgroundColor: `${member.custom_role_color}10` } : {}}
                                     className={cn("px-2 py-0.5 text-[9px] font-bold uppercase tracking-tighter",
-                                    !member.custom_role_color && (member.role === 'owner' ? "bg-primary/10 text-primary border-primary/20" :
-                                      member.role === 'admin' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : "bg-zinc-500/5 text-zinc-400 border-white/10")
-                                  )}>
+                                      !member.custom_role_color && (member.role === 'owner' ? "bg-primary/10 text-primary border-primary/20" :
+                                        member.role === 'admin' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : "bg-zinc-500/5 text-zinc-400 border-white/10")
+                                    )}>
                                     {member.custom_role_name || member.role}
                                   </Badge>
                                 )}
@@ -538,7 +549,7 @@ export default function ProjectPage() {
                         onClick={() => { setIsTeamOpen(false); setIsShareOpen(true); }}
                         className="w-full bg-white text-black hover:bg-zinc-200 rounded-xl h-12 font-black uppercase tracking-[0.15em] text-[10px] shadow-lg transition-transform active:scale-[0.98]"
                       >
-                        Invite Collaborator
+                        Invite Member
                       </Button>
                       <Button
                         variant="ghost"
@@ -546,7 +557,7 @@ export default function ProjectPage() {
                         className="w-full text-zinc-500 hover:text-white hover:bg-white/5 rounded-xl h-10 font-bold uppercase tracking-widest text-[9px]"
                       >
                         <ShieldAlert size={14} className="mr-2 text-primary" />
-                        Create Workspace Role
+                        New Team Role
                       </Button>
                     </div>
                   </DialogContent>
@@ -564,9 +575,9 @@ export default function ProjectPage() {
                         <Share2 size={28} />
                       </div>
                       <div className="text-center space-y-1">
-                        <DialogTitle className="text-2xl font-bold tracking-tight">Expand the Team</DialogTitle>
+                        <DialogTitle className="text-2xl font-bold tracking-tight">Invite Members</DialogTitle>
                         <DialogDescription className="text-zinc-500 text-sm">
-                          Inviting to <span className="text-zinc-200 font-semibold">{project?.name}</span>
+                          Invite teammates to <span className="text-zinc-200 font-semibold">{project?.name}</span>
                         </DialogDescription>
                       </div>
                     </DialogHeader>
@@ -582,7 +593,7 @@ export default function ProjectPage() {
                       </div>
                       {/* FIXED: White Button with Black Text */}
                       <Button type="submit" disabled={isShareLoading} className="w-full h-14 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-lg transition-all active:scale-[0.98]">
-                        {isShareLoading ? "Transmitting..." : "Send Secure Invitation"}
+                        {isShareLoading ? "Sending..." : "Send Invitation"}
                       </Button>
                     </form>
                   </DialogContent>
@@ -598,7 +609,7 @@ export default function ProjectPage() {
                   <DialogTrigger asChild>
                     <Button className="bg-white text-black hover:bg-zinc-100 gap-2 h-10 px-4 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all active:scale-95 group">
                       <Plus size={16} className="group-hover:rotate-90 transition-transform duration-300" />
-                      <span className="hidden sm:inline">New Task</span>
+                      <span className="hidden sm:inline">Add Task</span>
                     </Button>
                   </DialogTrigger>
                 </Dialog>
@@ -644,6 +655,8 @@ export default function ProjectPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-500 group-focus-within:text-white transition-colors" />
               <input
                 placeholder="Find tasks..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-white/5 border border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-primary/40 w-full md:w-72 transition-all"
               />
             </div>
@@ -651,10 +664,82 @@ export default function ProjectPage() {
         </div>
       </header>
 
+      {/* Filter + Group Bar */}
+      {view === 'kanban' && (
+        <div className="px-8 py-4 border-b border-white/5 bg-[#0D0D0D]/30 backdrop-blur-md flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2">
+          <Filter size={14} className="text-zinc-500" />
+          <Select value={filterPriority} onValueChange={setFilterPriority}>
+            <SelectTrigger className="h-8 w-[110px] bg-white/5 border-white/10 text-[10px] uppercase font-bold tracking-widest rounded-lg">
+              <SelectValue placeholder="Priority" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#0D0D0D] border-white/5 text-white">
+              <SelectItem value="all">All Priorities</SelectItem>
+              <SelectItem value="High">High</SelectItem>
+              <SelectItem value="Medium">Medium</SelectItem>
+              <SelectItem value="Low">Low</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={filterAssignee} onValueChange={setFilterAssignee}>
+            <SelectTrigger className="h-8 w-[130px] bg-white/5 border-white/10 text-[10px] uppercase font-bold tracking-widest rounded-lg">
+              <SelectValue placeholder="Assignee" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#0D0D0D] border-white/5 text-white">
+              <SelectItem value="all">All Assignees</SelectItem>
+              {members.map(m => (
+                <SelectItem key={m.id} value={m.id.toString()}>{m.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Separator orientation="vertical" className="h-6 bg-white/10" />
+
+        <div className="flex items-center gap-2">
+          <Layers size={14} className="text-zinc-500" />
+          <Select value={groupBy} onValueChange={(val: any) => setGroupBy(val)}>
+            <SelectTrigger className="h-8 w-[120px] bg-white/5 border-white/10 text-[10px] uppercase font-bold tracking-widest rounded-lg">
+              <SelectValue placeholder="Group by" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#0D0D0D] border-white/5 text-white">
+              <SelectItem value="status">By Status</SelectItem>
+              <SelectItem value="priority">By Priority</SelectItem>
+              <SelectItem value="assignee">By Assignee</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="ml-auto flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setFocusMode(!focusMode)}
+            className={cn("h-8 px-3 rounded-lg text-[10px] uppercase font-black tracking-widest transition-all",
+              focusMode ? "bg-primary text-white" : "text-zinc-500 hover:text-white hover:bg-white/5")}
+          >
+            <Zap size={14} className={cn("mr-2", focusMode && "fill-white")} />
+            Focus Mode
+          </Button>
+        </div>
+      </div>
+      )}
+
       {/* Main Area */}
       <main ref={boardRef} className="flex-1 min-w-0 overflow-hidden flex flex-col">
         {view === 'kanban' && (
-          <KanbanBoard tasks={tasks} projectId={project?.id} onTasksChange={setTasks} members={members} />
+          <KanbanBoard
+            tasks={tasks}
+            projectId={project?.id}
+            onTasksChange={setTasks}
+            members={members}
+            searchQuery={searchQuery}
+            filterPriority={filterPriority}
+            filterAssignee={filterAssignee}
+            groupBy={groupBy}
+            focusMode={focusMode}
+            currentUser={currentUser}
+          />
         )}
         {view === 'list' && (
           <ListView tasks={tasks} onTaskClick={(task) => { }} />
@@ -715,14 +800,14 @@ export default function ProjectPage() {
             </div>
           </DialogHeader>
           <DialogFooter className="flex flex-col gap-3 mt-6">
-            <Button 
+            <Button
               variant="destructive"
               className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[11px]"
               onClick={handleRemoveMember}
             >
               Confirm Removal
             </Button>
-            <Button 
+            <Button
               variant="ghost"
               className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[11px] text-zinc-500 hover:text-white"
               onClick={() => setIsRemoveMemberOpen(false)}
@@ -741,46 +826,46 @@ export default function ProjectPage() {
               <ShieldAlert size={32} />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-bold tracking-tight mb-1">Create Team Role</DialogTitle>
+              <DialogTitle className="text-2xl font-bold tracking-tight mb-1">New Role</DialogTitle>
               <DialogDescription className="text-zinc-500 text-sm">
-                Define a new permission set for your workspace.
+                Define a new set of permissions for this project.
               </DialogDescription>
             </div>
           </DialogHeader>
           <div className="mt-8 space-y-6">
-             <div className="space-y-3">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Role Name</Label>
-                <Input 
-                  placeholder="e.g. Designer, Manager" 
-                  value={newRoleName}
-                  onChange={(e) => setNewRoleName(e.target.value)}
-                  className="bg-white/5 border-white/10 rounded-xl h-12"
-                />
-             </div>
-             
-             <div className="space-y-3">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Identity Color</Label>
-                <div className="flex items-center gap-3">
-                  <div 
-                    className="size-12 rounded-xl border border-white/10 shrink-0 shadow-inner"
-                    style={{ backgroundColor: newRoleColor }}
-                  />
-                  <Input 
-                    type="color" 
-                    value={newRoleColor}
-                    onChange={(e) => setNewRoleColor(e.target.value)}
-                    className="bg-white/5 border-white/10 rounded-xl h-12 w-full cursor-pointer p-1"
-                  />
-                </div>
-             </div>
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Role Name</Label>
+              <Input
+                placeholder="e.g. Designer, Manager"
+                value={newRoleName}
+                onChange={(e) => setNewRoleName(e.target.value)}
+                className="bg-white/5 border-white/10 rounded-xl h-12"
+              />
+            </div>
 
-             <Button 
-               className="w-full bg-white text-black hover:bg-zinc-200 rounded-xl h-12 font-bold uppercase tracking-widest text-[11px]"
-               onClick={handleCreateRole}
-               disabled={isShareLoading}
-             >
-               {isShareLoading ? "Creating..." : "Initialize Role"}
-             </Button>
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Identity Color</Label>
+              <div className="flex items-center gap-3">
+                <div
+                  className="size-12 rounded-xl border border-white/10 shrink-0 shadow-inner"
+                  style={{ backgroundColor: newRoleColor }}
+                />
+                <Input
+                  type="color"
+                  value={newRoleColor}
+                  onChange={(e) => setNewRoleColor(e.target.value)}
+                  className="bg-white/5 border-white/10 rounded-xl h-12 w-full cursor-pointer p-1"
+                />
+              </div>
+            </div>
+
+            <Button
+              className="w-full bg-white text-black hover:bg-zinc-200 rounded-xl h-12 font-bold uppercase tracking-widest text-[11px]"
+              onClick={handleCreateRole}
+              disabled={isShareLoading}
+            >
+              {isShareLoading ? "Creating..." : "Create Role"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

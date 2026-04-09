@@ -52,13 +52,13 @@ export async function GET(req: NextRequest) {
     // Get projects for this workspace
     // Get workspace projects (owned)
     const ownedProjects = await sql`
-      SELECT p.* FROM projects p
+      SELECT p.*, TRUE as is_owner FROM projects p
       WHERE p.workspace_id = ${workspace.id}
     `;
 
     // Get collaborated projects
     const collaboratedProjects = await sql`
-      SELECT p.* FROM projects p
+      SELECT p.*, FALSE as is_owner FROM projects p
       JOIN project_members pm ON p.id = pm.project_id
       WHERE pm.user_id = ${payload.id}
     `;

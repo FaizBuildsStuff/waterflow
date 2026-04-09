@@ -16,21 +16,39 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Get members of projects owned by the user
     const members = await sql`
+      WITH user_projects AS (
+        SELECT project_id 
+        FROM project_members 
+        WHERE user_id = ${payload.id}
+        UNION
+        SELECT p.id 
+        FROM projects p
+        JOIN workspaces w ON p.workspace_id = w.id
+        WHERE w.owner_id = ${payload.id}
+      ),
+      collaborators AS (
+        SELECT 
+          u.id, 
+          u.name, 
+          u.email, 
+          u.avatar_url,
+          pm.role,
+          pm.created_at as joined_at,
+          p.name as project_name
+        FROM project_members pm
+        JOIN users u ON pm.user_id = u.id
+        JOIN projects p ON pm.project_id = p.id
+        WHERE pm.project_id IN (SELECT project_id FROM user_projects)
+        AND u.id != ${payload.id}
+      )
       SELECT 
-        u.id, 
-        u.name, 
-        u.email, 
-        pm.role, 
-        pm.created_at as joined_at,
-        p.name as project_name
-      FROM project_members pm
-      JOIN users u ON pm.user_id = u.id
-      JOIN projects p ON pm.project_id = p.id
-      JOIN workspaces w ON p.workspace_id = w.id
-      WHERE w.owner_id = ${payload.id}
-      ORDER BY pm.created_at DESC
+        id, name, email, avatar_url, role,
+        MIN(joined_at) as joined_at,
+        STRING_AGG(project_name, ', ') as project_name
+      FROM collaborators
+      GROUP BY id, name, email, avatar_url, role
+      ORDER BY joined_at DESC
     `;
 
     return NextResponse.json({ members, invitations: [] });

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import {
   Plus,
   MoreHorizontal,
@@ -62,6 +62,18 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 interface Task {
   id: number
@@ -69,11 +81,12 @@ interface Task {
   description?: string
   status: string
   priority: 'High' | 'Medium' | 'Low'
-  due_date?: string
-  assignee_id?: number
+  due_date?: string | null
+  assignee_id?: number | null
   subtasks?: any[]
   comments_count?: number
   created_at: string
+  blocked_by_ids?: number[]
 }
 
 interface KanbanBoardProps {
@@ -81,16 +94,27 @@ interface KanbanBoardProps {
   projectId: number
   onTasksChange: (tasks: Task[]) => void
   members?: any[]
+  searchQuery?: string
+  filterPriority?: string
+  filterAssignee?: string
+  groupBy?: 'status' | 'priority' | 'assignee'
+  focusMode?: boolean
+  currentUser?: any
 }
 
 const COLUMNS = [
-  { id: 'Todo', title: 'To Do', color: 'bg-zinc-500' },
+  { id: 'Todo', title: 'Todo', color: 'bg-zinc-500' },
   { id: 'In Progress', title: 'In Progress', color: 'bg-primary' },
   { id: 'In Review', title: 'In Review', color: 'bg-amber-500' },
   { id: 'Done', title: 'Done', color: 'bg-green-500' },
 ]
 
-const SortableTaskCard = ({ task, onClick, members }: { task: Task, onClick: () => void, members?: any[] }) => {
+const SortableTaskCard = ({ task, onClick, members, onUpdate }: { 
+  task: Task, 
+  onClick: () => void, 
+  members?: any[],
+  onUpdate: (taskId: number, updates: Partial<Task>) => void
+}) => {
   const {
     attributes,
     listeners,
@@ -108,12 +132,14 @@ const SortableTaskCard = ({ task, onClick, members }: { task: Task, onClick: () 
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'High': return 'text-red-400 bg-red-400/10 border-red-400/20'
-      case 'Medium': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20'
-      case 'Low': return 'text-blue-400 bg-blue-400/10 border-blue-400/20'
-      default: return 'text-zinc-400 bg-zinc-400/10'
+      case "High": return "bg-red-500/10 text-red-500 border-red-500/20";
+      case "Medium": return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+      case "Low": return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+      default: return "bg-zinc-500/10 text-zinc-500 border-white/10";
     }
-  }
+  };
+
+  const isBlocked = task.blocked_by_ids && task.blocked_by_ids.length > 0;
 
   return (
     <div
@@ -122,13 +148,70 @@ const SortableTaskCard = ({ task, onClick, members }: { task: Task, onClick: () 
       {...attributes}
       {...listeners}
       onClick={onClick}
+      className="relative group/card"
     >
-      <Card className="bg-[#0D0D0D] border-white/5 p-4 rounded-2xl group hover:border-primary/40 hover:bg-[#111111] transition-all cursor-pointer shadow-xl shadow-black/20 mb-3">
+      <Card className="bg-[#0D0D0D] border-white/5 p-4 rounded-2xl group hover:border-primary/40 hover:bg-[#111111] transition-all cursor-pointer shadow-xl shadow-black/20 mb-3 relative overflow-hidden">
+        {/* Quick Actions Bar */}
+        <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover/card:opacity-100 transition-all transform translate-y-[-10px] group-hover/card:translate-y-0 z-50 bg-[#0A0A0A]/80 backdrop-blur-md p-1 rounded-lg border border-white/10">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onUpdate(task.id, { status: 'Done' }) }}
+            className="p-1 hover:bg-green-500/20 text-zinc-400 hover:text-green-500 rounded transition-colors"
+            title="Mark Complete"
+          >
+            <CheckSquare size={14} />
+          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button 
+                onClick={(e) => { e.stopPropagation(); }}
+                className="p-1 hover:bg-primary/20 text-zinc-400 hover:text-primary rounded transition-colors"
+                title="Change Priority"
+              >
+                <TrendingUp size={14} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-[#0D0D0D] border-white/10 text-white min-w-[120px]">
+              <DropdownMenuItem onClick={() => onUpdate(task.id, { priority: 'High' })}>High</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onUpdate(task.id, { priority: 'Medium' })}>Medium</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onUpdate(task.id, { priority: 'Low' })}>Low</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button 
+                onClick={(e) => { e.stopPropagation(); }}
+                className="p-1 hover:bg-amber-500/20 text-zinc-400 hover:text-amber-500 rounded transition-colors"
+                title="Set Due Date"
+              >
+                <Calendar size={14} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-3 bg-[#0D0D0D] border-white/10" onClick={(e) => e.stopPropagation()}>
+              <div className="space-y-2">
+                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Pick Due Date</p>
+                <Input 
+                  type="date" 
+                  defaultValue={task.due_date?.split('T')[0]} 
+                  onChange={(e) => onUpdate(task.id, { due_date: e.target.value })}
+                  className="bg-white/5 border-white/10 h-8 text-[10px] invert brightness-0"
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <Badge className={cn("border px-2 py-0 text-[9px] font-black uppercase tracking-wider", getPriorityColor(task.priority))}>
-              {task.priority || 'Medium'}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge className={cn("border px-2 py-0 text-[9px] font-black uppercase tracking-wider", getPriorityColor(task.priority))}>
+                {task.priority || 'Medium'}
+              </Badge>
+              {isBlocked && (
+                <div className="size-5 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500" title="This task is blocked">
+                  <AlertCircle size={10} className="fill-red-500/20" />
+                </div>
+              )}
+            </div>
             <Avatar className="size-6 ring-2 ring-black" title={members?.find(m => m.id === task.assignee_id)?.name || 'Unassigned'}>
               <AvatarImage src={members?.find(m => m.id === task.assignee_id)?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${members?.find(m => m.id === task.assignee_id)?.name || task.id}`} />
               <AvatarFallback className="text-[8px] bg-zinc-800 uppercase">{members?.find(m => m.id === task.assignee_id)?.name?.charAt(0) || 'U'}</AvatarFallback>
@@ -161,7 +244,18 @@ const SortableTaskCard = ({ task, onClick, members }: { task: Task, onClick: () 
   )
 }
 
-export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: KanbanBoardProps) => {
+export const KanbanBoard = ({ 
+  tasks, 
+  projectId, 
+  onTasksChange, 
+  members,
+  searchQuery = '',
+  filterPriority = 'all',
+  filterAssignee = 'all',
+  groupBy = 'status',
+  focusMode = false,
+  currentUser
+}: KanbanBoardProps) => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState('')
@@ -179,6 +273,8 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
   const [newColTitle, setNewColTitle] = useState('')
   const [colToDelete, setColToDelete] = useState<any>(null)
   const [isDeleteColOpen, setIsDeleteColOpen] = useState(false)
+  const [collapsedColumns, setCollapsedColumns] = useState<string[]>([])
+  const [isAiPrioritizing, setIsAiPrioritizing] = useState(false)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -205,6 +301,90 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
       console.error('Fetch columns error:', err)
     }
   }
+
+  const handleAiPrioritize = async () => {
+    if (!projectId || isAiPrioritizing) return
+    setIsAiPrioritizing(true)
+    try {
+      // Filter tasks in "Todo" (or current status-based column)
+      const todoTasks = tasks.filter(t => t.status === 'Todo')
+      const res = await fetch('/api/ai/prioritize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tasks: todoTasks })
+      })
+      if (res.ok) {
+        const { order } = await res.json()
+        if (Array.isArray(order)) {
+          // Re-order tasks and potentially update their priority in DB if needed, 
+          // but for now let's just re-order them in the view.
+          // Real apps would persistent this order via a 'position' field.
+          const taskMap = new Map(tasks.map(t => [t.id, t]))
+          const newTasks = [...tasks]
+          // Simple reordering for the sake of demonstration
+          const reordered = order.map(id => taskMap.get(id)).filter(Boolean) as Task[]
+          const otherTasks = tasks.filter(t => !order.includes(t.id))
+          onTasksChange([...reordered, ...otherTasks])
+        }
+      }
+    } catch (err) {
+      console.error('AI Prioritize error:', err)
+    } finally {
+      setIsAiPrioritizing(false)
+    }
+  }
+
+  const toggleColumnCollapse = (columnId: string) => {
+    setCollapsedColumns(prev => 
+      prev.includes(columnId) ? prev.filter(c => c !== columnId) : [...prev, columnId]
+    )
+  }
+
+  const handleUpdateTask = async (taskId: number, updates: Partial<Task>) => {
+    // Optimistic update
+    onTasksChange(tasks.map(t => t.id === taskId ? { ...t, ...updates } : t))
+
+    try {
+      await fetch('/api/tasks', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: taskId, ...updates })
+      })
+    } catch (err) {
+      console.error('Update task error:', err)
+    }
+  }
+
+  const filteredTasks = tasks.filter(task => {
+    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesPriority = filterPriority === 'all' || task.priority === filterPriority
+    const matchesAssignee = filterAssignee === 'all' || task.assignee_id?.toString() === filterAssignee
+    const matchesFocus = !focusMode || task.assignee_id === currentUser?.id
+    return matchesSearch && matchesPriority && matchesAssignee && matchesFocus
+  })
+
+  // Dynamic board columns based on groupBy
+  const boardColumns = useMemo(() => {
+    if (groupBy === 'status') return columns.length > 0 ? columns : COLUMNS
+    if (groupBy === 'priority') {
+      return [
+        { id: 'High', title: 'High', color: 'bg-red-500' },
+        { id: 'Medium', title: 'Medium', color: 'bg-yellow-500' },
+        { id: 'Low', title: 'Low', color: 'bg-blue-500' }
+      ]
+    }
+    if (groupBy === 'assignee') {
+      const assignedMembers = members || []
+      const cols = assignedMembers.map(m => ({
+        id: m.id.toString(),
+        title: m.name,
+        color: 'bg-primary'
+      }))
+      cols.push({ id: 'unassigned', title: 'Unassigned', color: 'bg-zinc-500' })
+      return cols
+    }
+    return columns
+  }, [groupBy, columns, members])
 
   const fetchComments = async (taskId: number) => {
     try {
@@ -259,25 +439,60 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
 
     // If dropped over a column or another task in a different column
     const overId = over.id
-    const overColumn = columns.find(c => c.title === overId || c.id.toString() === overId.toString())
-
-    let newStatus = activeTask.status
-    if (overColumn) {
-      newStatus = overColumn.title
-    } else {
-      const overTask = tasks.find(t => t.id === overId)
-      if (overTask) newStatus = overTask.status
+    const overColumn = boardColumns.find((c: any) => c.title === overId || c.id.toString() === overId.toString())
+    
+    let updates: Partial<Task> = {}
+    
+    if (groupBy === 'status') {
+      let newStatus = activeTask.status
+      if (overColumn) {
+        newStatus = overColumn.title
+      } else {
+        const overTask = tasks.find(t => t.id === overId)
+        if (overTask) newStatus = overTask.status
+      }
+      if (newStatus !== activeTask.status) updates.status = newStatus
+    } else if (groupBy === 'priority') {
+      let newPriority = activeTask.priority
+      if (overColumn) {
+        newPriority = overColumn.id as any
+      } else {
+        const overTask = tasks.find(t => t.id === overId)
+        if (overTask) newPriority = overTask.priority
+      }
+      if (newPriority !== activeTask.priority) updates.priority = newPriority
+    } else if (groupBy === 'assignee') {
+      let newAssignee = activeTask.assignee_id
+      if (overColumn) {
+        newAssignee = overColumn.id === 'unassigned' ? null : parseInt(overColumn.id)
+      } else {
+        const overTask = tasks.find(t => t.id === overId)
+        if (overTask) newAssignee = overTask.assignee_id
+      }
+      if (newAssignee !== activeTask.assignee_id) updates.assignee_id = newAssignee
     }
 
-    if (newStatus !== activeTask.status) {
-      const updatedTasks = tasks.map(t => t.id === active.id ? { ...t, status: newStatus } : t)
-      onTasksChange(updatedTasks)
+    // If moving to 'In Progress', check if task is blocked
+    const updatedStatus = updates.status || activeTask.status;
+    const isBlocked = activeTask.blocked_by_ids && activeTask.blocked_by_ids.length > 0;
+    if (updatedStatus === 'In Progress' && isBlocked) {
+      // Check if any blocker is NOT 'Done'
+      const blockingTasks = tasks.filter(t => activeTask.blocked_by_ids?.includes(t.id))
+      const hasIncompleteBlockers = blockingTasks.some(t => t.status !== 'Done')
+      if (hasIncompleteBlockers) {
+        alert(`This task is blocked by ${blockingTasks.filter(t => t.status !== 'Done').map(t => t.title).join(', ')}`)
+        return
+      }
+    }
+
+    if (Object.keys(updates).length > 0) {
+      onTasksChange(tasks.map(t => t.id === active.id ? { ...t, ...updates } : t))
 
       // Sync with DB
       fetch('/api/tasks', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: active.id, status: newStatus })
+        body: JSON.stringify({ id: active.id, ...updates })
       })
     }
   }
@@ -363,49 +578,99 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
       >
         <ScrollArea className="h-full w-full">
           <div className="flex gap-6 p-8 h-full min-w-max">
-            {columns.map((column) => {
-              const columnTasks = tasks.filter(t => (t.status || 'Todo') === column.title)
+            {boardColumns.map((column: any) => {
+              const isCollapsed = collapsedColumns.includes(column.id.toString())
+              const columnTasks = filteredTasks.filter(t => {
+                if (groupBy === 'status') return (t.status || 'Todo') === column.title
+                if (groupBy === 'priority') return (t.priority || 'Medium') === column.id
+                if (groupBy === 'assignee') {
+                  if (column.id === 'unassigned') return !t.assignee_id
+                  return t.assignee_id?.toString() === column.id
+                }
+                return (t.status || 'Todo') === column.title
+              })
+
               return (
-                <div key={column.id} className="kanban-column w-80 flex flex-col gap-4">
+                <div 
+                  key={column.id} 
+                  className={cn("kanban-column flex flex-col gap-4 transition-all duration-300", 
+                    isCollapsed ? "w-16" : "w-80")}
+                >
                   <div className="flex items-center justify-between px-2 mb-2">
-                    <div className="flex items-center gap-3">
-                      <span className={cn("size-2 rounded-full", column.color || 'bg-zinc-500')} />
-                      <h3 className="text-sm font-bold text-white tracking-widest uppercase">{column.title}</h3>
-                      <Badge variant="outline" className="bg-white/5 border-white/5 text-[10px] text-zinc-500 px-2">
-                        {columnTasks.length}
-                      </Badge>
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <span className={cn("size-2 rounded-full shrink-0", column.color || 'bg-zinc-500')} />
+                      {!isCollapsed && (
+                        <>
+                          <h3 className="text-sm font-bold text-white tracking-widest uppercase truncate">{column.title}</h3>
+                          <Badge variant="outline" className="bg-white/5 border-white/5 text-[10px] text-zinc-500 px-2 shrink-0">
+                            {columnTasks.length}
+                          </Badge>
+                        </>
+                      )}
                     </div>
-                    <button onClick={() => { setColToDelete(column); setIsDeleteColOpen(true); }} className="text-zinc-600 hover:text-red-500 transition-colors">
-                      <MoreHorizontal size={16} />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      {column.id === 'Todo' && groupBy === 'status' && !isCollapsed && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleAiPrioritize}
+                          disabled={isAiPrioritizing}
+                          className="size-7 text-primary hover:bg-primary/10 rounded-lg"
+                          title="AI Prioritize"
+                        >
+                          {isAiPrioritizing ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} className="fill-current" />}
+                        </Button>
+                      )}
+                      <button 
+                        onClick={() => toggleColumnCollapse(column.id.toString())} 
+                        className="text-zinc-600 hover:text-white transition-colors p-1"
+                      >
+                        {isCollapsed ? <ChevronRight size={14} /> : <MoreHorizontal size={14} />}
+                      </button>
+                    </div>
                   </div>
 
-                  <SortableContext
-                    id={column.title}
-                    items={columnTasks.map(t => t.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <KanbanDroppableColumn id={column.title}>
-                      <div className="space-y-3 min-h-[500px] flex flex-col bg-white/[0.02] rounded-3xl p-2 border border-dashed border-white/5 group-hover:border-primary/20 transition-all">
-                        {columnTasks.map((task) => (
-                          <SortableTaskCard
-                            key={task.id}
-                            task={task}
-                            members={members}
-                            onClick={() => setSelectedTask(task)}
-                          />
-                        ))}
+                  {!isCollapsed ? (
+                    <SortableContext
+                      id={column.id.toString()}
+                      items={columnTasks.map(t => t.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <KanbanDroppableColumn id={column.id.toString()}>
+                        <div className="space-y-3 min-h-[500px] flex flex-col bg-white/2 rounded-3xl p-2 border border-dashed border-white/5 group-hover:border-primary/20 transition-all">
+                          {columnTasks.map((task) => (
+                            <SortableTaskCard
+                              key={task.id}
+                              task={task}
+                              members={members}
+                              onClick={() => setSelectedTask(task)}
+                              onUpdate={handleUpdateTask}
+                            />
+                          ))}
 
-                        <button
-                          onClick={() => { setNewTaskStatus(column.title); setIsAddTaskOpen(true); }}
-                          className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-dashed border-white/5 text-zinc-600 hover:border-primary/20 hover:text-primary transition-all group mt-auto"
-                        >
-                          <Plus size={16} className="group-hover:scale-110 transition-transform" />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Add Task</span>
-                        </button>
+                          <button
+                            onClick={() => { 
+                              if (groupBy === 'status') setNewTaskStatus(column.title)
+                              setIsAddTaskOpen(true); 
+                            }}
+                            className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-dashed border-white/5 text-zinc-600 hover:border-primary/20 hover:text-primary transition-all group mt-auto"
+                          >
+                            <Plus size={16} className="group-hover:scale-110 transition-transform" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Add Task</span>
+                          </button>
+                        </div>
+                      </KanbanDroppableColumn>
+                    </SortableContext>
+                  ) : (
+                    <div 
+                      onClick={() => toggleColumnCollapse(column.id.toString())}
+                      className="flex-1 bg-white/2 rounded-2xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-white/5 transition-all"
+                    >
+                      <div className="rotate-90 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 whitespace-nowrap">
+                        {column.title} ({columnTasks.length})
                       </div>
-                    </KanbanDroppableColumn>
-                  </SortableContext>
+                    </div>
+                  )}
                 </div>
               )
             })}
@@ -414,7 +679,7 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
             <div className="w-80 flex flex-col gap-4">
               <Dialog open={isAddColOpen} onOpenChange={setIsAddColOpen}>
                 <DialogTrigger asChild>
-                  <button className="w-full flex items-center justify-center gap-2 py-12 rounded-[32px] border-2 border-dashed border-white/5 text-zinc-600 hover:border-primary/40 hover:text-primary transition-all group bg-white/[0.02]">
+                  <button className="w-full flex items-center justify-center gap-2 py-12 rounded-[32px] border-2 border-dashed border-white/5 text-zinc-600 hover:border-primary/40 hover:text-primary transition-all group bg-white/2">
                     <Plus size={24} className="group-hover:scale-110 transition-transform" />
                     <span className="text-xs font-black uppercase tracking-[0.2em]">Add Column</span>
                   </button>
@@ -523,6 +788,21 @@ export const KanbanBoard = ({ tasks, projectId, onTasksChange, members }: Kanban
                   </div>
                 </div>
               </div>
+
+              {selectedTask?.blocked_by_ids && selectedTask.blocked_by_ids.length > 0 && (
+                <div className="space-y-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-red-500">Blocked By</p>
+                  <div className="space-y-2">
+                    {tasks.filter(t => selectedTask.blocked_by_ids?.includes(t.id)).map(blocker => (
+                      <div key={blocker.id} className="flex items-center gap-3 p-3 rounded-xl bg-red-500/5 border border-red-500/10">
+                        <AlertCircle size={14} className="text-red-500" />
+                        <span className="text-xs font-bold">{blocker.title}</span>
+                        <Badge variant="outline" className="ml-auto text-[8px] uppercase">{blocker.status}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

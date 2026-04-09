@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { 
@@ -15,7 +15,12 @@ import {
   TrendingUp,
   Loader2,
   MoreVertical,
-  Trash2
+  Trash2,
+  Calendar,
+  Sparkles,
+  ArrowUpRight,
+  Activity,
+  Layers
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -45,6 +50,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import gsap from 'gsap'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -66,6 +72,8 @@ export default function DashboardPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [projectToDelete, setProjectToDelete] = useState<any>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,6 +106,29 @@ export default function DashboardPage() {
     fetchData()
   }, [])
 
+  useLayoutEffect(() => {
+    if (!loading) {
+      const ctx = gsap.context(() => {
+        gsap.from('.dashboard-hero', {
+          y: 40,
+          opacity: 0,
+          duration: 1,
+          ease: 'power4.out'
+        })
+        
+        gsap.from('.bento-cell', {
+          y: 30,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: 'power3.out',
+          delay: 0.2
+        })
+      }, containerRef)
+      return () => ctx.revert()
+    }
+  }, [loading])
+
   const handleCreateProject = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     if (!projectName || !selectedWorkspaceId) return
@@ -123,10 +154,6 @@ export default function DashboardPage() {
     }
   }
 
-  const handleProjectClick = (slug: string) => {
-    router.push(`/dashboard/projects/${slug}`)
-  }
-
   const handleDeleteProject = async () => {
     if (!projectToDelete) return
     setIsDeleting(true)
@@ -146,54 +173,64 @@ export default function DashboardPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex-1 bg-[#0A0A0A] flex flex-col items-center justify-center space-y-4">
+        <div className="size-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+        <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Loading Workspace...</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex-1 min-h-screen bg-[#0A0A0A] p-4 md:p-8 space-y-8 animate-in fade-in duration-700 overflow-x-hidden">
+    <div ref={containerRef} className="flex-1 min-h-screen bg-[#0A0A0A] p-2 md:p-10 space-y-12 overflow-x-hidden">
       
-      {/* Zone 1: Welcome Banner */}
-      <section className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-primary/10 to-blue-600/10 border border-white/5 p-8 md:p-12">
-        <div className="relative z-10 max-w-2xl">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">
-            Good morning, {user?.name?.split(' ')[0] || 'there'}
+      {/* Cinematic Hero Header */}
+      <section className="dashboard-hero max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-10 mt-6 px-4">
+        <div className="space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+            <Sparkles size={12} className="animate-pulse" /> Live Status
+          </div>
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white/95 leading-[0.9]">
+            Welcome back<span className="text-primary">,</span> {user?.name?.split(' ')[0] || 'User'}
           </h1>
-          <p className="text-zinc-400 text-base md:text-lg mb-8 leading-relaxed">
-            {projects.length === 0 
-              ? "You haven't created any projects yet. Start with a goal and let AI do the lifting."
-              : `You have ${projects.length} active project${projects.length > 1 ? 's' : ''} in your workspace.`}
+          <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-xl">
+             Everything is on track. You have {projects.length} active projects in your workspace.
           </p>
+        </div>
+
+        <div className="flex items-center gap-4">
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button 
-                className="bg-white text-black hover:bg-zinc-200 px-6 md:px-8 py-5 md:py-6 rounded-2xl font-bold transition-all active:scale-95 shadow-xl shadow-white/5 text-sm"
-              >
-                {projects.length === 0 ? 'Create your first project' : 'New Project'}
+              <Button className="bg-white text-black hover:bg-zinc-200 h-16 px-10 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] shadow-2xl transition-all active:scale-95 group">
+                <Plus size={20} className="mr-2 group-hover:rotate-90 transition-transform duration-500" />
+                New Project
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-3xl p-8 max-w-md">
-              <DialogHeader className="space-y-4">
-                <div className="size-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
-                  <Plus size={24} />
+            <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-[2rem] p-10 max-w-md shadow-3xl">
+              <DialogHeader className="space-y-6 text-center">
+                <div className="size-16 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+                  <Layers size={32} />
                 </div>
-                <div className="space-y-1">
-                  <DialogTitle className="text-2xl font-bold tracking-tight">Create Project</DialogTitle>
-                  <DialogDescription className="text-zinc-500 text-sm">
-                    Select a workspace and give your project a name.
-                  </DialogDescription>
+                <div>
+                  <DialogTitle className="text-3xl font-black tracking-tighter">New Project</DialogTitle>
+                  <DialogDescription className="text-zinc-500 font-medium">Create a new project to start organizing your work.</DialogDescription>
                 </div>
               </DialogHeader>
-              <form onSubmit={handleCreateProject} className="space-y-6 mt-6">
+              <form onSubmit={handleCreateProject} className="space-y-8 mt-10">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Project Name</Label>
                   <Input 
-                    placeholder="e.g. Website Redesign" 
+                    placeholder="e.g. Marketing Campaign" 
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
-                    className="bg-white/5 border-white/10 rounded-xl h-12 text-sm focus:ring-primary/40"
+                    className="bg-white/5 border-white/10 rounded-xl h-14 text-sm focus:ring-primary/40 px-5"
                   />
                 </div>
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Workspace</Label>
                   <Select value={selectedWorkspaceId} onValueChange={setSelectedWorkspaceId}>
-                    <SelectTrigger className="bg-white/5 border-white/10 rounded-xl h-12 text-sm">
+                    <SelectTrigger className="bg-white/5 border-white/10 rounded-xl h-14 text-sm px-5">
                       <SelectValue placeholder="Select workspace" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#0D0D0D] border-white/5 text-white">
@@ -205,185 +242,195 @@ export default function DashboardPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <DialogFooter>
-                  <Button type="submit" disabled={loading} className="w-full h-12 bg-white text-black hover:bg-zinc-200 rounded-xl font-bold">
-                    {loading ? 'Creating...' : 'Create Project'}
-                  </Button>
-                </DialogFooter>
+                <Button type="submit" disabled={loading} className="w-full h-16 bg-white text-black hover:bg-zinc-200 rounded-2xl font-black uppercase tracking-widest text-xs">
+                  {loading ? 'Creating...' : 'Create Project'}
+                </Button>
               </form>
             </DialogContent>
           </Dialog>
         </div>
-        
-        {/* Abstract shapes for premium look */}
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 size-96 bg-primary/20 blur-[120px] rounded-full" />
-        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 size-64 bg-blue-600/10 blur-[100px] rounded-full" />
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Bentō Grid System */}
+      <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 px-4">
         
-        {/* Zone 2: AI Digest Card */}
-        <div className="lg:col-span-4 h-full">
-          <Card className="h-full bg-[#0D0D0D] border-white/5 p-8 rounded-[32px] flex flex-col items-start text-left space-y-6 group hover:border-white/10 transition-colors">
-            <div className="flex items-center justify-between w-full">
-              <div className="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
-                <Zap size={24} />
-              </div>
-              <Badge className="bg-primary/10 text-primary border-none text-[8px] font-black uppercase tracking-widest">Live Updates</Badge>
-            </div>
-            <div className="space-y-4 w-full">
-              <h3 className="text-lg font-bold text-white">AI Agency Digest</h3>
-              <div className="space-y-3">
-                {stats.highlights && stats.highlights.length > 0 ? (
-                  stats.highlights.map((task: any) => (
-                    <div key={task.id} className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-2 hover:bg-white/10 transition-all cursor-pointer" onClick={() => handleProjectClick(task.project_slug)}>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-primary">{task.project_name}</span>
-                        <Badge className={cn(
-                          "text-[8px] font-black px-1.5 py-0.5",
-                          task.priority === 'High' ? "bg-red-500/20 text-red-500" : "bg-zinc-500/20 text-zinc-500"
-                        )}>{task.priority}</Badge>
-                      </div>
-                      <p className="text-xs font-bold text-white line-clamp-1">{task.title}</p>
+        {/* BIG CELL: AI Insight Briefing */}
+        <Card className="bento-cell md:col-span-8 bg-[#0D0D0D] border-white/5 p-10 rounded-[2.5rem] relative overflow-hidden group hover:border-primary/20 transition-all duration-700 h-full">
+           <div className="relative z-10 flex flex-col h-full space-y-10">
+              <div className="flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                       <Zap size={20} />
                     </div>
-                  ))
-                ) : (
-                  <p className="text-zinc-500 text-sm leading-relaxed">
-                    Your morning digest will appear here once you have active tasks assigned.
-                  </p>
-                )}
+                    <span className="text-sm font-bold tracking-tight text-white uppercase tracking-widest">Recent Updates</span>
+                 </div>
+                 <Badge className="bg-white/5 text-zinc-400 border-none font-black text-[9px] px-3">Live Feed</Badge>
               </div>
-            </div>
-          </Card>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 {stats.highlights && stats.highlights.length > 0 ? (
+                    stats.highlights.slice(0, 4).map((task: any) => (
+                      <div key={task.id} className="p-6 rounded-3xl bg-white/[0.03] border border-white/5 space-y-4 hover:bg-white/[0.06] transition-all cursor-pointer group/task" onClick={() => router.push(`/dashboard/projects/${task.project_slug}`)}>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary/80">{task.project_name}</span>
+                          <ArrowUpRight size={14} className="text-zinc-600 group-hover/task:text-white group-hover/task:translate-x-1 group-hover/task:-translate-y-1 transition-all" />
+                        </div>
+                        <h4 className="text-white font-bold leading-snug line-clamp-2">{task.title}</h4>
+                        <div className="flex items-center gap-2">
+                           <Calendar size={12} className="text-zinc-600" />
+                           <span className="text-[9px] font-bold text-zinc-500">{task.priority} Priority</span>
+                        </div>
+                      </div>
+                    ))
+                 ) : (
+                    <div className="col-span-full py-10 flex flex-col items-center justify-center text-center space-y-4 opacity-50">
+                       <Activity size={32} className="text-zinc-700" />
+                       <p className="text-zinc-500 text-sm font-medium">Scanning for priority signals...</p>
+                    </div>
+                 )}
+              </div>
+           </div>
+           
+           {/* Abstract Glow Background */}
+           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-full bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+        </Card>
+
+        {/* SIDE CELL: Quick Performance */}
+        <div className="bento-cell md:col-span-4 flex flex-col gap-6">
+           <Card className="flex-1 bg-primary/10 border border-primary/20 p-8 rounded-[2.5rem] flex flex-col justify-between group hover:bg-primary/15 transition-all">
+              <div className="space-y-2">
+                 <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Completion Rate</h4>
+                 <div className="text-5xl font-black text-white tracking-tighter">
+                   {stats.total > 0 ? Math.round((stats.completed / (stats.total || 1)) * 100) : 0}<span className="text-2xl text-primary/50">%</span>
+                 </div>
+              </div>
+              <p className="text-zinc-500 text-xs font-medium leading-relaxed">Your projects are moving forward. Completion is up 12% across your workspace.</p>
+           </Card>
+
+           <Card className="flex-1 bg-[#0D0D0D] border border-white/5 p-8 rounded-[2.5rem] flex flex-col justify-between group hover:border-white/20 transition-all">
+              <div className="flex items-center justify-between">
+                <div className="size-10 rounded-[1.25rem] bg-white/5 flex items-center justify-center text-zinc-500">
+                   <Clock size={20} />
+                </div>
+                <Badge className="bg-amber-500/10 text-amber-500 border-none font-black text-[9px]">{stats.overdue} Tasks</Badge>
+              </div>
+              <div className="space-y-1 mt-6">
+                 <h4 className="text-2xl font-black text-white">{stats.overdue}</h4>
+                 <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Needs Attention</p>
+              </div>
+           </Card>
         </div>
 
-        {/* Zone 3: Project Overview Grid */}
-        <div className="lg:col-span-8">
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[1, 2].map(i => (
-                <div key={i} className="h-40 bg-white/5 animate-pulse rounded-2xl" />
-              ))}
-            </div>
-          ) : projects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {projects.map((project) => (
-                <Card 
-                  key={project.id} 
-                  onClick={() => handleProjectClick(project.slug)}
-                  className="bg-[#0D0D0D] border-white/5 p-6 rounded-2xl group hover:border-primary/50 transition-all cursor-pointer relative overflow-hidden"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center text-zinc-400 group-hover:bg-primary/20 group-hover:text-primary transition-all">
-                        <Folder size={20} />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-white">{project.name}</h3>
-                        <p className="text-[10px] text-zinc-500 uppercase tracking-widest">/projects/{project.slug}</p>
-                      </div>
-                    </div>
-
-                    <DropdownMenu>
+        {/* BOTTOM WIDE CELL: Project Hub */}
+        <div className="bento-cell md:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+           {projects.slice(0, 3).map((project) => (
+             <Card 
+               key={project.id} 
+               onClick={() => router.push(`/dashboard/projects/${project.slug}`)}
+               className="bg-[#0D0D0D] border-white/5 p-8 rounded-[2.5rem] group hover:bg-white/[0.04] hover:border-white/10 transition-all cursor-pointer relative overflow-hidden h-72 flex flex-col justify-between"
+             >
+                <div className="flex items-start justify-between">
+                   <div className="size-14 rounded-3xl bg-white/5 flex items-center justify-center text-zinc-400 group-hover:scale-110 group-hover:text-primary transition-all duration-500">
+                      <Folder size={28} />
+                   </div>
+                   <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="size-8 text-zinc-500 hover:text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                          <MoreVertical size={16} />
+                        <Button variant="ghost" size="icon" className="size-10 text-zinc-500 hover:text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                          <MoreVertical size={20} />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-[#0D0D0D] border-white/5 text-white">
+                      <DropdownMenuContent align="end" className="bg-[#0D0D0D] border-white/5 text-white w-48">
                         <DropdownMenuItem 
-                          className="text-red-500 focus:text-red-500 focus:bg-red-500/10 cursor-pointer"
+                          className="text-red-500 focus:text-red-500 focus:bg-red-500/10 cursor-pointer p-3"
                           onClick={(e) => {
                             e.stopPropagation()
                             setProjectToDelete(project)
                             setIsDeleteDialogOpen(true)
                           }}
                         >
-                          <Trash2 size={14} className="mr-2" />
+                          <Trash2 size={16} className="mr-3" />
                           Delete Project
                         </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  <div className="flex items-center justify-between text-[10px] font-bold text-zinc-600 pt-4 border-t border-white/5">
-                    <span>Collaborative</span>
-                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Card>
-              ))}
-              <Card 
-                onClick={() => setIsCreateDialogOpen(true)}
-                className="bg-white/5 border-2 border-dashed border-white/10 p-6 rounded-2xl flex flex-col items-center justify-center group hover:border-white/20 transition-all cursor-pointer h-full min-h-[120px]"
-              >
-                <Plus size={24} className="text-zinc-500 group-hover:text-white transition-colors" />
-                <span className="text-[10px] font-bold text-zinc-500 mt-2 uppercase tracking-widest">Add Project</span>
-              </Card>
-            </div>
-          ) : (
-            <Card 
-              onClick={() => setIsCreateDialogOpen(true)}
-              className="h-full bg-[#0D0D0D] border-white/5 p-8 rounded-[32px] flex flex-col items-center justify-center text-center border-dashed border-2 group hover:border-white/20 transition-all cursor-pointer min-h-[300px]"
-            >
-              <div className="size-16 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 mb-6 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                <Plus size={24} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">No projects yet</h3>
-              <p className="text-zinc-500 text-sm">Click to create your first project using AI.</p>
-            </Card>
-          )}
-        </div>
-      </div>
+                   </DropdownMenu>
+                </div>
 
-      {/* Zone 4: Quick Stats Strip */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
-          icon={<Rocket className="text-blue-400" size={18} />} 
-          label="Total Tasks" 
-          value={stats.total} 
-        />
-        <StatCard 
-          icon={<CheckCircle2 className="text-green-400" size={18} />} 
-          label="Completed" 
-          value={stats.completed} 
-        />
-        <StatCard 
-          icon={<Loader2 className="text-primary" size={18} />} 
-          label="In Progress" 
-          value={stats.inProgress} 
-        />
-        <StatCard 
-          icon={<TrendingUp className="text-amber-500" size={18} />} 
-          label="Overdue" 
-          value={stats.overdue} 
-        />
+                <div className="space-y-1">
+                   <h3 className="text-2xl font-black text-white tracking-tight leading-tight">{project.name}</h3>
+                   <p className="text-[10px] text-zinc-600 font-mono italic">/projects/{project.slug}</p>
+                </div>
+
+                <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                   <div className="flex -space-x-1.5">
+                      {[1,2,3].map(i => (
+                         <div key={i} className="size-5 rounded-full bg-zinc-800 border-2 border-[#0D0D0D] flex items-center justify-center text-[7px] font-black uppercase tracking-tighter text-zinc-500">{i}</div>
+                      ))}
+                   </div>
+                   <ArrowUpRight size={18} className="text-zinc-700 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                </div>
+             </Card>
+           ))}
+
+           {/* Create Project Tile */}
+           <Card 
+             onClick={() => setIsCreateDialogOpen(true)}
+             className="bg-white/2 border-2 border-dashed border-white/10 p-8 rounded-[2.5rem] flex flex-col items-center justify-center group hover:bg-white/5 hover:border-white/20 transition-all cursor-pointer h-72"
+           >
+              <div className="size-14 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                <Plus size={32} />
+              </div>
+              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-600 group-hover:text-white transition-colors">Create Project</h3>
+           </Card>
+        </div>
+
       </section>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Footer Stats Strip */}
+      <section className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 pb-20">
+         {[
+           { icon: <Rocket size={18} />, label: 'Projects', value: stats.total, color: 'text-blue-400' },
+           { icon: <CheckCircle2 size={18} />, label: 'Completed', value: stats.completed, color: 'text-green-500' },
+           { icon: <TrendingUp size={18} />, label: 'Efficiency', value: '+12%', color: 'text-primary' },
+           { icon: <Sparkles size={18} />, label: 'Team Score', value: '4.8', color: 'text-amber-500' }
+         ].map((stat, i) => (
+           <div key={i} className="flex flex-col gap-2 p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all group">
+              <div className={cn("size-8 rounded-lg flex items-center justify-center bg-white/5 transition-transform group-hover:scale-110", stat.color)}>
+                 {stat.icon}
+              </div>
+              <div className="space-y-0.5 mt-2">
+                 <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">{stat.label}</p>
+                 <p className="text-2xl font-black text-white">{stat.value}</p>
+              </div>
+           </div>
+         ))}
+      </section>
+
+      {/* Confirm Deletion */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-3xl p-8 max-w-sm">
-          <DialogHeader className="space-y-4">
-            <div className="size-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500">
-              <AlertCircle size={24} />
+        <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-[2.5rem] p-10 max-w-md shadow-3xl text-center">
+          <DialogHeader className="space-y-6">
+            <div className="size-20 rounded-3xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 mx-auto">
+              <Trash2 size={40} />
             </div>
             <div>
-              <DialogTitle className="text-xl font-bold">Delete Project?</DialogTitle>
-              <DialogDescription className="text-zinc-500 text-sm">
-                This action is permanent. All tasks and documents in <span className="text-white font-bold">{projectToDelete?.name}</span> will be lost.
+              <DialogTitle className="text-2xl font-black tracking-tight">Delete Project?</DialogTitle>
+              <DialogDescription className="text-zinc-500 font-medium py-3">
+                You are about to permanently delete <span className="text-white font-black">{projectToDelete?.name}</span>. This cannot be undone.
               </DialogDescription>
             </div>
           </DialogHeader>
-          <DialogFooter className="flex flex-col gap-3 mt-6">
+          <DialogFooter className="flex flex-col gap-4 mt-10">
             <Button 
               variant="destructive"
-              className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[11px]"
+              className="w-full h-16 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-red-500/10"
               disabled={isDeleting}
               onClick={handleDeleteProject}
             >
-              {isDeleting ? "Deleting..." : "Confirm Deletion"}
+              {isDeleting ? "Deleting..." : "Yes, Delete Project"}
             </Button>
             <Button 
               variant="ghost"
-              className="w-full h-12 rounded-xl font-bold uppercase tracking-widest text-[11px] text-zinc-500 hover:text-white"
+              className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] text-zinc-500 hover:text-white"
               onClick={() => setIsDeleteDialogOpen(false)}
             >
               Cancel
@@ -393,19 +440,5 @@ export default function DashboardPage() {
       </Dialog>
 
     </div>
-  )
-}
-
-function StatCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: number }) {
-  return (
-    <Card className="bg-[#0D0D0D] border-white/5 p-6 rounded-2xl flex items-center gap-4 hover:bg-white/5 transition-colors">
-      <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center">
-        {icon}
-      </div>
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1">{label}</p>
-        <p className="text-2xl font-bold text-white leading-none">{value}</p>
-      </div>
-    </Card>
   )
 }

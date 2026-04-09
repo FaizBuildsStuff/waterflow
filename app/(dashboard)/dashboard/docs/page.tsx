@@ -42,18 +42,27 @@ export default function DocsPage() {
 
   return (
     <div className="flex-1 min-h-screen bg-[#0A0A0A] p-8 space-y-8 animate-in fade-in duration-700">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Knowledge Base</h1>
-          <p className="text-zinc-500 text-sm mt-1">Manage project documentation and AI strategic reports.</p>
-        </div>
-        
-        <div className="relative group w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-600 group-focus-within:text-white transition-colors" />
-          <input 
-            placeholder="Search documents..." 
-            className="w-full bg-white/5 border border-white/5 rounded-2xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all"
-          />
+      <header className="px-8 pt-12 pb-8 border-b border-white/5 bg-[#0A0A0A]/50 backdrop-blur-3xl sticky top-0 z-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+              <FileText size={12} className="animate-pulse" /> Document Center
+            </div>
+            <h1 className="text-6xl md:text-7xl font-black tracking-tighter text-white/95 leading-[0.9]">
+              Documents<span className="text-primary">.</span>
+            </h1>
+            <p className="text-zinc-500 text-lg font-medium max-w-xl">
+               Access and manage your project documentation and strategic reports.
+            </p>
+          </div>
+          
+          <div className="relative group w-full md:w-96">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-zinc-600 group-focus-within:text-white transition-colors" />
+            <input 
+              placeholder="Search all documents..." 
+              className="w-full bg-white/5 border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all font-medium"
+            />
+          </div>
         </div>
       </header>
 
