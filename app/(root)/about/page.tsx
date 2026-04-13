@@ -17,29 +17,7 @@ export default function AboutPage() {
                 image="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=2000&auto=format&fit=crop"
             />
 
-            <BentoGrid 
-                items={[
-                    {
-                        title: 'Global Vision',
-                        description: 'A distributed team of engineers and filmmakers operating across 12 countries.',
-                        span: 'md:col-span-1'
-                    },
-                    {
-                        title: 'Innovation Lab',
-                        description: 'We invest 40% of our resources directly into R&D for autonomous content orchestration.',
-                        span: 'md:col-span-2'
-                    },
-                    {
-                        title: 'Human-Centric',
-                        description: 'AI is our engine, but human vision is our compass. We build tools that empower, not replace.',
-                    },
-                    {
-                        title: 'Absolute Precision',
-                        description: 'A commitment to pixel-perfect delivery and brand-consistent scaling at any volume.',
-                        span: 'md:col-span-2'
-                    }
-                ]}
-            />
+            
         </main>
     );
 }

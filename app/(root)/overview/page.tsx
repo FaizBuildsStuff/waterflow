@@ -17,28 +17,7 @@ export default function OverviewPage() {
                 image="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2000&auto=format&fit=crop"
             />
 
-            <BentoGrid 
-                items={[
-                    {
-                        title: 'Real-time Rendering',
-                        description: 'Cloud-native processing that delivers 8k output in seconds, not hours.',
-                        span: 'md:col-span-2'
-                    },
-                    {
-                        title: 'Brand Consistency',
-                        description: 'Every pixel aligns with your core identity using neural feedback loops.',
-                    },
-                    {
-                        title: 'Global Delivery',
-                        description: 'Automatically optimize and deploy content across every channel simultaneously.',
-                    },
-                    {
-                        title: 'Autonomous Scaling',
-                        description: 'Watch your creative production volume increase by 10x without adding new headcounts.',
-                        span: 'md:col-span-2'
-                    }
-                ]}
-            />
+            
 
             <VisualSection 
                 reverse
