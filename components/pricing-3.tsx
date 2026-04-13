@@ -37,7 +37,7 @@ const plans = [
         name: 'Neural Engine',
         price: '$8',
         period: '/month',
-        description: 'The full power of Waterflow for high-velocity teams.',
+        description: 'The full power of Anthryve for high-velocity teams.',
         features: [
             'Priority Cognitive Processing',
             'Everything in Pro Flow',

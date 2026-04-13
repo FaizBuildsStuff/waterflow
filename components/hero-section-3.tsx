@@ -23,14 +23,14 @@ export default function HeroSection() {
                         <div className="relative z-10 mx-auto w-full max-w-5xl sm:pl-6">
                             <div className="flex items-center justify-between max-md:flex-col">
                                 <div className="max-w-md max-sm:px-6">
-                                    <h1 className="text-balance font-serif text-4xl font-medium sm:text-5xl">Ship faster. Integrate smarter.</h1>
-                                    <p className="text-muted-foreground mt-4 text-balance">Veil is your all-in-one engine for adding seamless integrations to your app.</p>
+                                    <h1 className="text-balance font-serif text-4xl font-medium sm:text-5xl">Cinematic Creatives. Hyper-Scale Growth.</h1>
+                                    <p className="text-muted-foreground mt-4 text-balance">Anthryve is the ultimate production engine for high-converting ad creatives, organic content, and SaaS videos.</p>
 
                                     <Button
                                         asChild
                                         className="mt-6 pr-1.5">
-                                        <Link href="#link">
-                                            <span className="text-nowrap">Start Building</span>
+                                        <Link href="/signup">
+                                            <span className="text-nowrap">Start Growing</span>
                                             <ChevronRight className="opacity-50" />
                                         </Link>
                                     </Button>
@@ -39,18 +39,18 @@ export default function HeroSection() {
                                     aria-hidden
                                     className="mask-y-from-50% relative max-md:mx-auto max-md:*:scale-90">
                                     {[
-                                        'How do I integrate Supabase authentication?',
-                                        'Set up real-time subscriptions with Firebase',
-                                        'Connect Slack notifications to my app',
-                                        'Implement Twilio SMS verification',
-                                        'Add Linear issue tracking integration',
-                                        'Set up Figma design sync',
-                                        'Deploy to Vercel with environment variables',
-                                        'Configure Clerk user management',
-                                        'Build an AI assistant with Claude',
-                                        'Create a webhook endpoint for Stripe',
-                                        'Set up OAuth with multiple providers',
-                                        'Implement rate limiting for API endpoints',
+                                        "How can I scale my ad creatives?",
+                                        "Show me SaaS video portfolio",
+                                        "Pricing for organic content bundles",
+                                        "Start a new project now",
+                                        "How does your creative process work?",
+                                        "Can you handle high-volume testing?",
+                                        "What's the turnaround time for SaaS videos?",
+                                        "Do you offer ad management too?",
+                                        "Show me high-converting examples",
+                                        "How do I book a discovery call?",
+                                        "What platforms do you support?",
+                                        "Get a custom quote for my brand",
                                     ].map((prompt, index) => (
                                         <div
                                             key={index}
@@ -84,4 +84,3 @@ export default function HeroSection() {
         </>
     )
 }
- 

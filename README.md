@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/droplets.svg" width="80" height="80" alt="Waterflow Logo" />
-  <h1>Waterflow</h1>
+  <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/sparkles.svg" width="80" height="80" alt="Anthryve Logo" />
+  <h1>Anthryve</h1>
   <p align="center">
     <strong>The AI-Native OS for High-Performance Agencies.</strong><br />
-    Work that flows like water. Orchestrated by Intelligence.
+    Elevate your agency's momentum. Orchestrated by Intelligence.
   </p>
   
   <p align="center">
@@ -18,10 +18,10 @@
 
 ## 🌊 The Philosophy of Flow
 
-In high-stakes agency environments, friction is the enemy of excellence. **Waterflow** is engineered to eliminate the "organizing" tax. Built with a fluid design language and an AI-first heartbeat, it transforms complex project management into a seamless, continuous stream of productivity.
+In high-stakes agency environments, friction is the enemy of excellence. **Anthryve** is engineered to eliminate the "organizing" tax. Built with a modern design language and an AI-first heartbeat, it transforms complex project management into a high-growth environment.
 
 > [!IMPORTANT]
-> **Waterflow is currently in Private Beta.** It is built for agencies that demand high-fidelity visuals, real-time collaboration, and AI-assisted task decomposition.
+> **Anthryve is currently in Private Beta.** It is built for agencies that demand high-fidelity visuals, real-time collaboration, and AI-assisted task decomposition.
 
 ---
 
@@ -102,6 +102,6 @@ npm run dev
 ---
 
 <div align="center">
-  <sub>Built with precision by the Waterflow Engineering Team.</sub><br />
-  <sub>&copy; 2026 Waterflow Inc. All rights reserved.</sub>
+  <sub>Built with precision by the Anthryve Engineering Team.</sub><br />
+  <sub>&copy; 2026 Anthryve Inc. All rights reserved.</sub>
 </div>

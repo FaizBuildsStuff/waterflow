@@ -17,8 +17,10 @@ export async function GET(req: NextRequest) {
     }
 
     // Get the user's workspace
+    const workspaceId = req.cookies.get('workspace_id')?.value;
     let [workspace] = await sql`
-      SELECT id, name FROM workspaces WHERE owner_id = ${payload.id} LIMIT 1
+      SELECT id, name FROM workspaces WHERE owner_id = ${payload.id} 
+      ${workspaceId ? sql`AND id = ${workspaceId}` : sql`LIMIT 1`}
     `;
 
     // Resilient fallback: Create a default workspace if none exists
@@ -32,7 +34,7 @@ export async function GET(req: NextRequest) {
         `;
         
         // Also create a default project for this new workspace
-        const defaultProjectName = 'Getting started with Waterflow';
+        const defaultProjectName = 'Getting started with Anthryve';
         const projectSlug = defaultProjectName.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Math.random().toString(36).substring(2, 7);
         
         await tx`

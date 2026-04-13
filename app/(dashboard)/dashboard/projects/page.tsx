@@ -39,6 +39,13 @@ import {
 import { Label } from '@/components/ui/label'
 import gsap from 'gsap'
 import { cn } from '@/lib/utils'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface Project {
   id: number
@@ -69,6 +76,10 @@ export default function ProjectsPage() {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  const [workspaces, setWorkspaces] = useState<any[]>([])
+  const [activeWorkspace, setActiveWorkspace] = useState<any>(null)
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>('')
+
   const [searchQuery, setSearchQuery] = useState('')
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -76,16 +87,23 @@ export default function ProjectsPage() {
 
   const fetchUserAndProjects = async () => {
     try {
-      const [userRes, projectsRes] = await Promise.all([
+      const [userRes, projectsRes, workspacesRes] = await Promise.all([
         fetch('/api/auth/me'),
-        fetch('/api/projects')
+        fetch('/api/projects'),
+        fetch('/api/workspaces')
       ])
       
       const userData = await userRes.json()
       const projectsData = await projectsRes.json()
+      const workspacesData = await workspacesRes.json()
       
       setUser(userData.user)
+      setActiveWorkspace(userData.workspace)
+      if (userData.workspace) {
+        setSelectedWorkspaceId(userData.workspace.id.toString())
+      }
       setProjects(projectsData.projects || [])
+      setWorkspaces(workspacesData.workspaces || [])
     } catch (err) {
       console.error('Fetch error:', err)
     } finally {
@@ -133,7 +151,10 @@ export default function ProjectsPage() {
       const res = await fetch('/api/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newProjectName })
+        body: JSON.stringify({ 
+          name: newProjectName,
+          workspace_id: parseInt(selectedWorkspaceId)
+        })
       })
       if (res.ok) {
         setIsCreateOpen(false)
@@ -324,7 +345,12 @@ export default function ProjectsPage() {
       </div>
 
       {/* Dialogs */}
-      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+      <Dialog open={isCreateOpen} onOpenChange={(open) => {
+        setIsCreateOpen(open)
+        if (open && activeWorkspace) {
+          setSelectedWorkspaceId(activeWorkspace.id.toString())
+        }
+      }}>
         <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-[2rem] p-8 max-w-md shadow-2xl">
           <DialogHeader className="space-y-4">
             <div className="size-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
@@ -346,6 +372,21 @@ export default function ProjectsPage() {
                 onChange={(e) => setNewProjectName(e.target.value)}
                 className="bg-white/3 border-white/10 h-14 rounded-2xl focus:ring-primary/20 transition-all text-sm px-4"
               />
+            </div>
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Target Workspace</Label>
+              <Select value={selectedWorkspaceId} onValueChange={setSelectedWorkspaceId}>
+                <SelectTrigger className="bg-white/3 border-white/10 h-14 rounded-2xl focus:ring-primary/20 transition-all text-sm px-4">
+                  <SelectValue placeholder="Select workspace" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0D0D0D] border-white/10 text-white rounded-xl">
+                  {workspaces.map((ws) => (
+                    <SelectItem key={ws.id} value={ws.id.toString()} className="focus:bg-white/5 focus:text-white cursor-pointer">
+                      {ws.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <Button 
               onClick={handleCreateProject} 

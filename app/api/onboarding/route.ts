@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       `;
 
       // 2. Create Default Project (Optional, but recommended for new users)
-      const defaultProjectName = 'Getting started with Waterflow';
+      const defaultProjectName = 'Getting started with Anthryve';
       const slug = defaultProjectName.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Math.random().toString(36).substring(2, 7);
       
       await tx`

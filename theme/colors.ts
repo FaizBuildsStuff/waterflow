@@ -1,5 +1,5 @@
 // ============================================================
-//  Waterflow — Design Token System 2.0
+//  Anthryve — Design Token System 2.0
 //  Theme: Stealth Dark · High-Contrast · Satoshi Font
 // ============================================================
 
@@ -32,19 +32,19 @@ export const neutral = {
   950: "#0a0a0a",   // core page background
 } as const;
 
-// ── Waterflow Brand (Vibrant Blue) ──────────────────────────
-export const water = {
-  50:  "#eff6ff",
-  100: "#dbeafe",
-  200: "#bfdbfe",
-  300: "#93c5fd",
-  400: "#60a5fa",
-  500: "#3b82f6",   // Primary Brand Blue
-  600: "#2563eb",   // Interactive Hover
-  700: "#1d4ed8",
-  800: "#1e40af",
-  900: "#1e3a8a",
-  glow: "rgba(59, 130, 246, 0.5)", // For AI pulses
+// ── Anthryve Brand (Indigo/Purple) ──────────────────────────
+export const brand = {
+  50:  "#e0e7ff",
+  100: "#c7d2fe",
+  200: "#a5b4fc",
+  300: "#818cf8",
+  400: "#6366f1",
+  500: "#4f46e5",   // Primary Brand Indigo
+  600: "#4338ca",   // Interactive Hover
+  700: "#3730a3",
+  800: "#312e81",
+  900: "#1e1b4b",
+  glow: "rgba(99, 102, 241, 0.5)", // For AI pulses
 } as const;
 
 // ── Semantic Aliases (Stealth Mappings) ──────────────────────
@@ -61,19 +61,19 @@ export const colors = {
   accent:      "rgba(255, 255, 255, 0.05)", // Hover state for sidebar/rows
   
   // Brand
-  primary:     water[500],
+  primary:     brand[400],
   primaryForeground: neutral[0],
   
   // Borders
   border:      "rgba(255, 255, 255, 0.08)", // Thin surgical borders
   input:       "rgba(255, 255, 255, 0.05)",
-  ring:        water[500],
+  ring:        brand[400],
 
   // Status
   success: "#10b981",
   warning: "#f59e0b",
   error:   "#ef4444",
-  info:    water[400],
+  info:    brand[300],
 } as const;
 
 // ── Stealth Shadows ──────────────────────────────────────────
@@ -84,7 +84,7 @@ export const shadows = {
   lg: "0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
   xl: "0 20px 25px -5px rgba(0, 0, 0, 0.5)",
   // The Signature AI Glow
-  aiGlow: `0 0 20px -5px ${water.glow}`,
+  aiGlow: `0 0 20px -5px ${brand.glow}`,
 } as const;
 
 // ── Radius (Modern & Rounded) ────────────────────────────────
@@ -138,7 +138,7 @@ export default {
   fonts,
   fontWeights,
   neutral,
-  water,
+  brand,
   colors,
   shadows,
   radius,

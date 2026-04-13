@@ -6,7 +6,7 @@ export default function Stats() {
             <div className="mx-auto max-w-2xl px-6">
                 <div className="space-y-4">
                     <h2 className="text-balance font-serif text-4xl font-medium">Built for the speed of thought.</h2>
-                    <p className="text-muted-foreground text-balance">Waterflow delivers the architectural stability required to scale complex team workflows without losing cognitive momentum.</p>
+                    <p className="text-muted-foreground text-balance">Anthryve delivers the architectural stability required to scale complex team workflows without losing cognitive momentum.</p>
                 </div>
                 <div className="@xl:grid-cols-3 mt-12 grid grid-cols-2 gap-6 text-sm">
                     <div className="border-y py-6">

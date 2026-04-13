@@ -15,8 +15,8 @@ if (typeof window !== 'undefined') {
 
 const plans = [
     { name: 'Free Tier', price: '$0', period: '/forever', cta: 'Start Free', id: 'seed' },
-    { name: 'Pro Flow', price: '$9.99', period: '/month', cta: 'Start Free Trial', highlighted: true, id: 'pro' },
-    { name: 'Neural Engine', price: '$12.99', period: '/month', cta: 'Contact Sales', id: 'team' },
+    { name: 'Pro Flow', price: '$5', period: '/month', cta: 'Start Free Trial', highlighted: true, id: 'pro' },
+    { name: 'Neural Engine', price: '$8', period: '/month', cta: 'Contact Sales', id: 'team' },
 ]
 
 const features = [

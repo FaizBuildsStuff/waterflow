@@ -13,7 +13,7 @@ export default function Features() {
             <div className="mx-auto max-w-2xl px-6">
                 <div>
                     <h2 className="text-balance font-serif text-4xl font-medium">Powerful Features for Modern Teams</h2>
-                    <p className="text-muted-foreground mt-4 text-balance">Waterflow replaces fragmented tools with a single, autonomous engine that synchronizes your team’s cognitive current.</p>
+                    <p className="text-muted-foreground mt-4 text-balance">Anthryve replaces fragmented tools with a single, autonomous engine that synchronizes your team’s cognitive current.</p>
                 </div>
                 <div className="@xl:grid-cols-2 mt-12 grid gap-3 *:p-6">
                     <Card
@@ -21,7 +21,7 @@ export default function Features() {
                         className="row-span-2 grid grid-rows-subgrid">
                         <div className="space-y-2">
                             <h3 className="text-foreground font-medium">Universal Workspace Sync</h3>
-                            <p className="text-muted-foreground text-sm">Architect your flow across every tool. Waterflow connects your stack into a single actionable stream.</p>
+                            <p className="text-muted-foreground text-sm">Architect your flow across every tool. Anthryve connects your stack into a single actionable stream.</p>
                         </div>
                         <div
                             aria-hidden

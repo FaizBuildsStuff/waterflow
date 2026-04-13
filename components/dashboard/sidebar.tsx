@@ -182,7 +182,7 @@ export const SidebarContent = ({ onItemClick }: SidebarContentProps) => {
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 group-hover:text-primary transition-colors">Workspace</span>
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-white truncate max-w-[140px]">
-                  {activeWorkspace?.name || 'Waterflow'}
+                  {activeWorkspace?.name || 'Anthryve'}
                 </h2>
                 <Plus size={14} className="text-zinc-600 group-hover:text-white transition-colors" />
               </div>

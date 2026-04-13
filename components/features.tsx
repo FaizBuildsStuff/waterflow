@@ -48,7 +48,7 @@ export default function FeaturesBento() {
             Core Engine
           </span>
           <h2 className="mt-6 text-4xl md:text-6xl font-serif font-medium tracking-tight text-foreground">
-            Unified intelligence for <br /> 
+            Unified intelligence for <br />
             <span className="text-muted-foreground italic">high-velocity</span> teams.
           </h2>
         </div>
@@ -59,7 +59,7 @@ export default function FeaturesBento() {
           {/* Card 1: Main AI Feature */}
           <div className="bento-card md:col-span-4 md:row-span-2 bg-gradient-to-b from-primary to-[#0052FF] rounded-[40px] p-10 flex flex-col justify-between relative overflow-hidden group shadow-2xl shadow-primary/20">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] group-hover:bg-white/20 transition-all duration-700" />
-            
+
             <div className="z-10 bg-white/20 backdrop-blur-xl rounded-2xl p-4 w-fit border border-white/20 shadow-inner">
               <Bot className="text-white" size={32} />
             </div>
@@ -69,7 +69,7 @@ export default function FeaturesBento() {
                 Autonomous Task <br /> Decomposition.
               </h3>
               <p className="text-white/70 mt-4 font-medium leading-relaxed">
-                Input a goal, and Waterflow drafts your entire project architecture in seconds.
+                Input a goal, and Anthryve drafts your entire project architecture in seconds.
               </p>
             </div>
           </div>
@@ -90,33 +90,33 @@ export default function FeaturesBento() {
 
             {/* Mock UI Element */}
             <div className="mt-auto bg-muted/30 rounded-t-[32px] border-t border-x border-border p-8 h-[320px] translate-y-2 transition-transform duration-500 group-hover:translate-y-0">
-               <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" />
-                    <div className="h-3 w-48 bg-muted-foreground/20 rounded-full" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="h-24 rounded-2xl bg-background border border-border p-4">
-                        <div className="h-2 w-12 bg-primary/40 rounded-full mb-3" />
-                        <div className="space-y-2">
-                           <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
-                           <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
-                        </div>
-                    </div>
-                    <div className="h-24 rounded-2xl bg-background border border-border p-4">
-                        <div className="h-2 w-12 bg-green-500/40 rounded-full mb-3" />
-                        <div className="space-y-2">
-                           <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
-                           <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
-                        </div>
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-3 w-3 rounded-full bg-green-500 animate-pulse" />
+                  <div className="h-3 w-48 bg-muted-foreground/20 rounded-full" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="h-24 rounded-2xl bg-background border border-border p-4">
+                    <div className="h-2 w-12 bg-primary/40 rounded-full mb-3" />
+                    <div className="space-y-2">
+                      <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
+                      <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
                     </div>
                   </div>
-               </div>
-               
-               <div className="ai-float absolute top-20 right-20 bg-primary text-white shadow-2xl rounded-2xl p-4 flex items-center gap-3 border border-white/20">
-                  <Sparkles size={16} />
-                  <span className="text-xs font-bold tracking-wider uppercase">AI Digest Syncing...</span>
-               </div>
+                  <div className="h-24 rounded-2xl bg-background border border-border p-4">
+                    <div className="h-2 w-12 bg-green-500/40 rounded-full mb-3" />
+                    <div className="space-y-2">
+                      <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
+                      <div className="h-1.5 w-full bg-muted-foreground/10 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="ai-float absolute top-20 right-20 bg-primary text-white shadow-2xl rounded-2xl p-4 flex items-center gap-3 border border-white/20">
+                <Sparkles size={16} />
+                <span className="text-xs font-bold tracking-wider uppercase">AI Digest Syncing...</span>
+              </div>
             </div>
           </div>
 

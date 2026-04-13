@@ -1,15 +1,15 @@
-# Waterflow: High-Performance Agency Operating System
+# Anthryve: High-Performance Agency Operating System
 **Single Source of Truth (SSOT) & Technical Blueprint**
 
 > [!NOTE]
-> This document remains the authoritative reference for the Waterflow architecture, intelligence layer, and design philosophy. It is updated following every major feature initialization.
+> This document remains the authoritative reference for the Anthryve architecture, intelligence layer, and design philosophy. It is updated following every major feature initialization.
 
 ---
 
 ## 1. Executive Summary
-**Waterflow** is a premium, AI-native productivity platform engineered for elite agencies. It eliminates administrative friction through **Recursive Decomposition** (AI-driven task breaking) and **Fluid Workspace Coordination**. 
+**Anthryve** is a premium, AI-native productivity platform engineered for elite agencies. It eliminates administrative friction through **Recursive Decomposition** (AI-driven task breaking) and **Strategic Workspace Coordination**. 
 
-The platform's philosophy is "Continuous Flow" — removing the cognitive load of project organization so high-value teams can stay in creative and strategic execution.
+The platform's philosophy is "Continuous Momentum" — removing the cognitive load of project organization so high-value teams can stay in creative and strategic execution.
 
 ---
 
@@ -42,8 +42,8 @@ The platform's philosophy is "Continuous Flow" — removing the cognitive load o
 
 ## 4. Key Design Decisions & Philosophies
 
-### **The "Water" Motif**
-Water represents clarity, momentum, and the path of least resistance. Every UI element in Waterflow (buttons, badges, transitions) uses soft-radii, translucency, and fluid animations to reinforce this psychological state of "flow."
+### **The "Momentum" Motif**
+Anthryve represents peak performance, growth, and organizational momentum. Every UI element in Anthryve (buttons, badges, transitions) uses modern-radii, translucency, and high-fidelity animations to reinforce this state of "thriving."
 
 ### **Security-First Hierarchy**
 Ownership is sovereign. Project management follows a strict hierarchy where only the current **Owner** can transfer leadership. Upon transfer, former owners are automatically demoted to "Member" to preserve administrative integrity.
@@ -56,7 +56,7 @@ To maintain clean global workspaces, custom roles are **project-scoped**. This a
 ## 5. Directory Structure & Source Mapping
 
 ```bash
-waterflow/
+anthryve/
 ├── app/
 │   ├── (auth)/             # Secure Login & Identity protocols
 │   ├── (dashboard)/        # Main Agency Workspace and Project Engines
@@ -73,7 +73,7 @@ waterflow/
 ---
 
 ## 6. Intelligence Protocol (AI)
-Waterflow utilizes OpenAI `gpt-4o-mini` for all standard recursive tasks:
+Anthryve utilizes OpenAI `gpt-4o-mini` for all standard recursive tasks:
 1. **Recursive Task Breakdown**: Analyzes a goal and returns an optimized JSON structure of subtasks.
 2. **Contextual Descriptors**: Injects professional agency-grade language into task scopes.
 3. **Daily Synergist (Planned)**: Predictive analysis of project roadblocks and delivery dates.
@@ -81,11 +81,16 @@ Waterflow utilizes OpenAI `gpt-4o-mini` for all standard recursive tasks:
 ---
 
 ## 7. Operational Guidelines for AI Assistants
-When contributing to the Waterflow codebase, adhere to these "Elite Standards":
+When contributing to the Anthryve codebase, adhere to these "Elite Standards":
 - **Typography**: Never use system fonts. Always use Satoshi.
-- **Colors**: Standardize on high-contrast dark tokens (`#0A0A0A` page bg, `#0D0D0D` surfaces, `#1a7fe0` primary).
+- **Colors**: Standardize on high-contrast dark tokens (`#0A0A0A` page bg, `#0D0D0D` surfaces, `#6366f1` primary).
 - **Animations**: Entrance animations must use **GSAP**. Never rely solely on CSS transitions for critical UI elements.
 - **Response Geometry**: All new UI components must be responsive-first and maintain a "billion-dollar feel" through generous padding and glassmorphic borders.
+
+---
+*Last Refined: 2026-04-12*
+*System Status: Elite Agency Ready*
+ding and glassmorphic borders.
 
 ---
 *Last Refined: 2026-04-02*

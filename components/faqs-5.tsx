@@ -17,7 +17,7 @@ const faqCategories = [
             {
                 id: 'ai-1',
                 question: 'How does the AI task breakdown work?',
-                answer: 'Waterflow uses advanced LLMs to analyze your project goals. It identifies dependencies and splits complex objectives into actionable sub-tasks.',
+                answer: 'Anthryve uses advanced LLMs to analyze your project goals. It identifies dependencies and splits complex objectives into actionable sub-tasks.',
             },
             {
                 id: 'ai-2',
@@ -44,7 +44,7 @@ const faqCategories = [
             {
                 id: 's-1',
                 question: 'How many team members can I invite?',
-                answer: 'Seed and Pro Flow plans have fixed seats, while the Neural Engine offers unlimited seats.',
+                answer: 'Free Tier and Pro Flow plans have fixed seats, while the Neural Engine offers unlimited seats.',
             },
         ],
     },
@@ -86,7 +86,7 @@ export default function FAQs() {
                         Common Queries
                     </h2>
                     <p className="text-muted-foreground mx-auto mt-4 max-w-md text-lg">
-                        Everything you need to know about navigating the Waterflow ecosystem.
+                        Everything you need to know about navigating the Anthryve ecosystem.
                     </p>
                 </div>
 

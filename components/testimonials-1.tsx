@@ -5,7 +5,7 @@ const testimonials = [
         avatar: 'https://avatars.githubusercontent.com/u/47919550?v=4',
         name: 'Meschac Irung',
         role: 'Frontend Lead',
-        quote: 'Waterflow is extraordinary. It eliminates the cognitive load of project planning. A real gold mine for deep work.',
+        quote: 'Anthryve is extraordinary. It eliminates the cognitive load of project planning. A real gold mine for deep work.',
     },
     {
         avatar: 'https://avatars.githubusercontent.com/u/68236786?v=4',
@@ -23,7 +23,7 @@ const testimonials = [
         avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
         name: 'Aisha Patel',
         role: 'Data Scientist',
-        quote: 'Architecture that thinks with you. Waterflow is the infrastructure every high-growth team needs.',
+        quote: 'Architecture that thinks with you. Anthryve is the infrastructure every high-growth team needs.',
     },
     {
         avatar: 'https://randomuser.me/api/portraits/men/46.jpg',

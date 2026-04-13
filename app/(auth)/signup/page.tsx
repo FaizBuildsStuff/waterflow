@@ -151,7 +151,7 @@ export default function SignUp() {
                     <div className="form-element mb-10 text-center lg:text-left">
                         <h1 className="font-serif text-4xl font-medium tracking-tight text-foreground">Create account</h1>
                         <p className="text-muted-foreground mt-3 text-lg">
-                            Join <span className="text-foreground font-semibold font-serif">Waterflow</span> and start building.
+                            Join <span className="text-foreground font-semibold font-serif">Anthryve</span> and start building.
                         </p>
                     </div>
 

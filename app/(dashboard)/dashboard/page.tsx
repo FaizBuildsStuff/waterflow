@@ -3,12 +3,12 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { 
-  Plus, 
-  Zap, 
-  CheckCircle2, 
-  Clock, 
-  Rocket, 
+import {
+  Plus,
+  Zap,
+  CheckCircle2,
+  Clock,
+  Rocket,
   AlertCircle,
   Folder,
   ChevronRight,
@@ -68,7 +68,7 @@ export default function DashboardPage() {
     overdue: 0,
     highlights: []
   })
-  
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [projectToDelete, setProjectToDelete] = useState<any>(null)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -85,7 +85,7 @@ export default function DashboardPage() {
           fetch('/api/dashboard/stats'),
           fetch('/api/workspaces')
         ])
-        
+
         const meData = await meRes.json()
         const projectsData = await projectsRes.json()
         const statsData = await statsRes.json()
@@ -115,7 +115,7 @@ export default function DashboardPage() {
           duration: 1,
           ease: 'power4.out'
         })
-        
+
         gsap.from('.bento-cell', {
           y: 30,
           opacity: 0,
@@ -184,7 +184,7 @@ export default function DashboardPage() {
 
   return (
     <div ref={containerRef} className="flex-1 min-h-screen bg-[#0A0A0A] p-2 md:p-10 space-y-12 overflow-x-hidden">
-      
+
       {/* Cinematic Hero Header */}
       <section className="dashboard-hero max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-10 mt-6 px-4">
         <div className="space-y-6">
@@ -195,7 +195,7 @@ export default function DashboardPage() {
             Welcome back<span className="text-primary">,</span> {user?.name?.split(' ')[0] || 'User'}
           </h1>
           <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-xl">
-             Everything is on track. You have {projects.length} active projects in your workspace.
+            Everything is on track. You have {projects.length} active projects in your workspace.
           </p>
         </div>
 
@@ -220,8 +220,8 @@ export default function DashboardPage() {
               <form onSubmit={handleCreateProject} className="space-y-8 mt-10">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-600 ml-1">Project Name</Label>
-                  <Input 
-                    placeholder="e.g. Marketing Campaign" 
+                  <Input
+                    placeholder="e.g. Marketing Campaign"
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                     className="bg-white/5 border-white/10 rounded-xl h-14 text-sm focus:ring-primary/40 px-5"
@@ -253,184 +253,187 @@ export default function DashboardPage() {
 
       {/* Bentō Grid System */}
       <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 px-4">
-        
+
         {/* BIG CELL: AI Insight Briefing */}
         <Card className="bento-cell md:col-span-8 bg-[#0D0D0D] border-white/5 p-10 rounded-[2.5rem] relative overflow-hidden group hover:border-primary/20 transition-all duration-700 h-full">
-           <div className="relative z-10 flex flex-col h-full space-y-10">
-              <div className="flex items-center justify-between">
-                 <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                       <Zap size={20} />
-                    </div>
-                    <span className="text-sm font-bold tracking-tight text-white uppercase tracking-widest">Recent Updates</span>
-                 </div>
-                 <Badge className="bg-white/5 text-zinc-400 border-none font-black text-[9px] px-3">Live Feed</Badge>
+          <div className="relative z-10 flex flex-col h-full space-y-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <Zap size={20} />
+                </div>
+                <span className="text-sm font-bold tracking-tight text-white uppercase tracking-widest">Recent Updates</span>
               </div>
+              <Badge className="bg-white/5 text-zinc-400 border-none font-black text-[9px] px-3">Live Feed</Badge>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 {stats.highlights && stats.highlights.length > 0 ? (
-                    stats.highlights.slice(0, 4).map((task: any) => (
-                      <div key={task.id} className="p-6 rounded-3xl bg-white/[0.03] border border-white/5 space-y-4 hover:bg-white/[0.06] transition-all cursor-pointer group/task" onClick={() => router.push(`/dashboard/projects/${task.project_slug}`)}>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary/80">{task.project_name}</span>
-                          <ArrowUpRight size={14} className="text-zinc-600 group-hover/task:text-white group-hover/task:translate-x-1 group-hover/task:-translate-y-1 transition-all" />
-                        </div>
-                        <h4 className="text-white font-bold leading-snug line-clamp-2">{task.title}</h4>
-                        <div className="flex items-center gap-2">
-                           <Calendar size={12} className="text-zinc-600" />
-                           <span className="text-[9px] font-bold text-zinc-500">{task.priority} Priority</span>
-                        </div>
-                      </div>
-                    ))
-                 ) : (
-                    <div className="col-span-full py-10 flex flex-col items-center justify-center text-center space-y-4 opacity-50">
-                       <Activity size={32} className="text-zinc-700" />
-                       <p className="text-zinc-500 text-sm font-medium">Scanning for priority signals...</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {stats.highlights && stats.highlights.length > 0 ? (
+                stats.highlights.slice(0, 4).map((task: any) => (
+                  <div key={task.id} className="p-6 rounded-3xl bg-white/[0.03] border border-white/5 space-y-4 hover:bg-white/[0.06] transition-all cursor-pointer group/task" onClick={() => router.push(`/dashboard/projects/${task.project_slug}`)}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary/80">{task.project_name}</span>
+                      <ArrowUpRight size={14} className="text-zinc-600 group-hover/task:text-white group-hover/task:translate-x-1 group-hover/task:-translate-y-1 transition-all" />
                     </div>
-                 )}
-              </div>
-           </div>
-           
-           {/* Abstract Glow Background */}
-           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-full bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                    <h4 className="text-white font-bold leading-snug line-clamp-2">{task.title}</h4>
+                    <div className="flex items-center gap-2">
+                      <Calendar size={12} className="text-zinc-600" />
+                      <span className="text-[9px] font-bold text-zinc-500">{task.priority} Priority</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-10 flex flex-col items-center justify-center text-center space-y-4 opacity-50">
+                  <Activity size={32} className="text-zinc-700" />
+                  <p className="text-zinc-500 text-sm font-medium">Scanning for priority signals...</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Abstract Glow Background */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-full bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
         </Card>
 
         {/* SIDE CELL: Quick Performance */}
         <div className="bento-cell md:col-span-4 flex flex-col gap-6">
-           <Card className="flex-1 bg-primary/10 border border-primary/20 p-8 rounded-[2.5rem] flex flex-col justify-between group hover:bg-primary/15 transition-all">
-              <div className="space-y-2">
-                 <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Completion Rate</h4>
-                 <div className="text-5xl font-black text-white tracking-tighter">
-                   {stats.total > 0 ? Math.round((stats.completed / (stats.total || 1)) * 100) : 0}<span className="text-2xl text-primary/50">%</span>
-                 </div>
+          <Card className="flex-1 bg-primary/10 border border-primary/20 p-8 rounded-[2.5rem] flex flex-col justify-between group hover:bg-primary/15 transition-all">
+            <div className="space-y-2">
+              <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-primary/60">Completion Rate</h4>
+              <div className="text-5xl font-black text-white tracking-tighter">
+                {stats.total > 0 ? Math.round((stats.completed / (stats.total || 1)) * 100) : 0}<span className="text-2xl text-primary/50">%</span>
               </div>
-              <p className="text-zinc-500 text-xs font-medium leading-relaxed">Your projects are moving forward. Completion is up 12% across your workspace.</p>
-           </Card>
+            </div>
+            <p className="text-zinc-500 text-xs font-medium leading-relaxed">Your projects are moving forward. Completion is up 12% across your workspace.</p>
+          </Card>
 
-           <Card className="flex-1 bg-[#0D0D0D] border border-white/5 p-8 rounded-[2.5rem] flex flex-col justify-between group hover:border-white/20 transition-all">
-              <div className="flex items-center justify-between">
-                <div className="size-10 rounded-[1.25rem] bg-white/5 flex items-center justify-center text-zinc-500">
-                   <Clock size={20} />
-                </div>
-                <Badge className="bg-amber-500/10 text-amber-500 border-none font-black text-[9px]">{stats.overdue} Tasks</Badge>
+          <Card className="flex-1 bg-[#0D0D0D] border border-white/5 p-8 rounded-[2.5rem] flex flex-col justify-between group hover:border-white/20 transition-all">
+            <div className="flex items-center justify-between">
+              <div className="size-10 rounded-[1.25rem] bg-white/5 flex items-center justify-center text-zinc-500">
+                <Clock size={20} />
               </div>
-              <div className="space-y-1 mt-6">
-                 <h4 className="text-2xl font-black text-white">{stats.overdue}</h4>
-                 <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Needs Attention</p>
-              </div>
-           </Card>
+              <Badge className="bg-amber-500/10 text-amber-500 border-none font-black text-[9px]">{stats.overdue} Tasks</Badge>
+            </div>
+            <div className="space-y-1 mt-6">
+              <h4 className="text-2xl font-black text-white">{stats.overdue}</h4>
+              <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Needs Attention</p>
+            </div>
+          </Card>
         </div>
 
         {/* BOTTOM WIDE CELL: Project Hub */}
         <div className="bento-cell md:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-           {projects.slice(0, 3).map((project) => (
-             <Card 
-               key={project.id} 
-               onClick={() => router.push(`/dashboard/projects/${project.slug}`)}
-               className="bg-[#0D0D0D] border-white/5 p-8 rounded-[2.5rem] group hover:bg-white/[0.04] hover:border-white/10 transition-all cursor-pointer relative overflow-hidden h-72 flex flex-col justify-between"
-             >
-                <div className="flex items-start justify-between">
-                   <div className="size-14 rounded-3xl bg-white/5 flex items-center justify-center text-zinc-400 group-hover:scale-110 group-hover:text-primary transition-all duration-500">
-                      <Folder size={28} />
-                   </div>
-                   <DropdownMenu>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Button variant="ghost" size="icon" className="size-10 text-zinc-500 hover:text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-                          <MoreVertical size={20} />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-[#0D0D0D] border-white/5 text-white w-48">
-                        <DropdownMenuItem 
-                          className="text-red-500 focus:text-red-500 focus:bg-red-500/10 cursor-pointer p-3"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setProjectToDelete(project)
-                            setIsDeleteDialogOpen(true)
-                          }}
-                        >
-                          <Trash2 size={16} className="mr-3" />
-                          Delete Project
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                   </DropdownMenu>
+          {projects.slice(0, 3).map((project) => (
+            <Card
+              key={project.id}
+              onClick={() => router.push(`/dashboard/projects/${project.slug}`)}
+              className="bg-[#0D0D0D] border-white/5 p-8 rounded-[2.5rem] group hover:bg-white/[0.04] hover:border-white/10 transition-all cursor-pointer relative overflow-hidden h-72 flex flex-col justify-between"
+            >
+              <div className="flex items-start justify-between">
+                <div className="size-14 rounded-3xl bg-white/5 flex items-center justify-center text-zinc-400 group-hover:scale-110 group-hover:text-primary transition-all duration-500">
+                  <Folder size={28} />
                 </div>
-
-                <div className="space-y-1">
-                   <h3 className="text-2xl font-black text-white tracking-tight leading-tight">{project.name}</h3>
-                   <p className="text-[10px] text-zinc-600 font-mono italic">/projects/{project.slug}</p>
-                </div>
-
-                <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                   <div className="flex -space-x-1.5">
-                      {[1,2,3].map(i => (
-                         <div key={i} className="size-5 rounded-full bg-zinc-800 border-2 border-[#0D0D0D] flex items-center justify-center text-[7px] font-black uppercase tracking-tighter text-zinc-500">{i}</div>
-                      ))}
-                   </div>
-                   <ArrowUpRight size={18} className="text-zinc-700 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-                </div>
-             </Card>
-           ))}
-
-           {/* Create Project Tile */}
-           <Card 
-             onClick={() => setIsCreateDialogOpen(true)}
-             className="bg-white/2 border-2 border-dashed border-white/10 p-8 rounded-[2.5rem] flex flex-col items-center justify-center group hover:bg-white/5 hover:border-white/20 transition-all cursor-pointer h-72"
-           >
-              <div className="size-14 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500">
-                <Plus size={32} />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                    <Button variant="ghost" size="icon" className="size-10 text-zinc-500 hover:text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreVertical size={20} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-[#0D0D0D] border-white/5 text-white w-48">
+                    <DropdownMenuItem
+                      className="text-red-500 focus:text-red-500 focus:bg-red-500/10 cursor-pointer p-3"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setProjectToDelete(project)
+                        setIsDeleteDialogOpen(true)
+                      }}
+                    >
+                      <Trash2 size={16} className="mr-3" />
+                      Delete Project
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-600 group-hover:text-white transition-colors">Create Project</h3>
-           </Card>
+
+              <div className="space-y-1">
+                <h3 className="text-2xl font-black text-white tracking-tight leading-tight">{project.name}</h3>
+                <p className="text-[10px] text-zinc-600 font-mono italic">/projects/{project.slug}</p>
+              </div>
+
+              <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                <div className="flex -space-x-1.5">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="size-5 rounded-full bg-zinc-800 border-2 border-[#0D0D0D] flex items-center justify-center text-[7px] font-black uppercase tracking-tighter text-zinc-500">{i}</div>
+                  ))}
+                </div>
+                <ArrowUpRight size={18} className="text-zinc-700 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+              </div>
+            </Card>
+          ))}
+
+          {/* Create Project Tile */}
+          <Card
+            onClick={() => setIsCreateDialogOpen(true)}
+            className="bg-white/2 border-2 border-dashed border-white/10 p-8 rounded-[2.5rem] flex flex-col items-center justify-center group hover:bg-white/5 hover:border-white/20 transition-all cursor-pointer h-72"
+          >
+            <div className="size-14 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-500">
+              <Plus size={32} />
+            </div>
+            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-600 group-hover:text-white transition-colors">Create Project</h3>
+          </Card>
         </div>
 
       </section>
 
       {/* Footer Stats Strip */}
       <section className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 pb-20">
-         {[
-           { icon: <Rocket size={18} />, label: 'Projects', value: stats.total, color: 'text-blue-400' },
-           { icon: <CheckCircle2 size={18} />, label: 'Completed', value: stats.completed, color: 'text-green-500' },
-           { icon: <TrendingUp size={18} />, label: 'Efficiency', value: '+12%', color: 'text-primary' },
-           { icon: <Sparkles size={18} />, label: 'Team Score', value: '4.8', color: 'text-amber-500' }
-         ].map((stat, i) => (
-           <div key={i} className="flex flex-col gap-2 p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all group">
-              <div className={cn("size-8 rounded-lg flex items-center justify-center bg-white/5 transition-transform group-hover:scale-110", stat.color)}>
-                 {stat.icon}
-              </div>
-              <div className="space-y-0.5 mt-2">
-                 <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">{stat.label}</p>
-                 <p className="text-2xl font-black text-white">{stat.value}</p>
-              </div>
-           </div>
-         ))}
+        {[
+          { icon: <Rocket size={18} />, label: 'Projects', value: stats.total, color: 'text-blue-400' },
+          { icon: <CheckCircle2 size={18} />, label: 'Completed', value: stats.completed, color: 'text-green-500' },
+          { icon: <TrendingUp size={18} />, label: 'Efficiency', value: '+12%', color: 'text-primary' },
+          { icon: <Sparkles size={18} />, label: 'Team Score', value: '4.8', color: 'text-amber-500' }
+        ].map((stat, i) => (
+          <div key={i} className="flex flex-col gap-2 p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all group">
+            <div className={cn("size-8 rounded-lg flex items-center justify-center bg-white/5 transition-transform group-hover:scale-110", stat.color)}>
+              {stat.icon}
+            </div>
+            <div className="space-y-0.5 mt-2">
+              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">{stat.label}</p>
+              <p className="text-2xl font-black text-white">{stat.value}</p>
+            </div>
+          </div>
+        ))}
       </section>
 
       {/* Confirm Deletion */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-[2.5rem] p-10 max-w-md shadow-3xl text-center">
-          <DialogHeader className="space-y-6">
+        <DialogContent className="bg-[#0D0D0D] border-white/5 text-white rounded-[2.5rem] p-10 max-w-md shadow-3xl flex flex-col items-center">
+          <DialogHeader className="space-y-6 w-full text-center">
             <div className="size-20 rounded-3xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500 mx-auto">
               <Trash2 size={40} />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-black tracking-tight">Delete Project?</DialogTitle>
-              <DialogDescription className="text-zinc-500 font-medium py-3">
+              <DialogTitle className="text-2xl font-black tracking-tight text-center">Delete Project?</DialogTitle>
+              <DialogDescription className="text-zinc-500 font-medium py-3 text-center">
                 You are about to permanently delete <span className="text-white font-black">{projectToDelete?.name}</span>. This cannot be undone.
               </DialogDescription>
             </div>
           </DialogHeader>
-          <DialogFooter className="flex flex-col gap-4 mt-10">
-            <Button 
+
+          {/* Fixed Footer: Added sm:flex-col and sm:space-x-0 to stop it from shifting left/right */}
+          <DialogFooter className="flex flex-col items-center w-full gap-3 mt-6 sm:flex-col sm:justify-center sm:space-x-0">
+            <Button
               variant="destructive"
-              className="w-full h-16 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-red-500/10"
+              className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-red-500/10"
               disabled={isDeleting}
               onClick={handleDeleteProject}
             >
               {isDeleting ? "Deleting..." : "Yes, Delete Project"}
             </Button>
-            <Button 
+
+            <Button
               variant="ghost"
-              className="w-full h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] text-zinc-500 hover:text-white"
+              className="w-full py-2 font-black uppercase tracking-widest text-[10px] text-zinc-500 hover:text-white hover:bg-transparent"
               onClick={() => setIsDeleteDialogOpen(false)}
             >
               Cancel

@@ -6,7 +6,7 @@ export default function Content() {
             <div className="mx-auto max-w-2xl px-6">
                 <div className="space-y-4">
                     <h2 className="text-balance font-serif text-4xl font-medium">Content that feels architected, not just written.</h2>
-                    <p className="text-muted-foreground">Waterflow’s creative engine doesn't just "generate" text. It analyzes your project’s cognitive current to suggest ideas and structures that align perfectly with your expert voice.</p>
+                    <p className="text-muted-foreground">Anthryve’s creative engine doesn't just "generate" text. It analyzes your project’s cognitive current to suggest ideas and structures that align perfectly with your expert voice.</p>
                 </div>
                 <div className="@xl:grid-cols-3 mt-12 grid grid-cols-2 gap-6 text-sm">
                     <div className="space-y-3 border-t pt-6">

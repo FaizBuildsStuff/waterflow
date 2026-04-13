@@ -71,7 +71,7 @@ export const HeroHeader = () => {
                         {/* Logo */}
                         <div className="flex items-center">
                             <Link href="/" className="flex items-center space-x-2">
-                                <Logo className="h-8 w-auto" />
+                                <Logo className="h-8 w-auto" isScrolled={isScrolled} />
                             </Link>
                         </div>
 

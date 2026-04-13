@@ -17,7 +17,7 @@ export default function Integrations() {
                 <IntegrationsIllustration />
                 <div className="mx-auto mt-12 max-w-md text-balance text-center">
                     <h2 className="font-serif text-4xl font-medium">Your Workspace, Synchronized.</h2>
-                    <p className="text-muted-foreground mb-6 mt-4">Waterflow acts as the central nervous system for your stack. We architect the data flow between your favorite tools so you can focus on deep work.</p>
+                    <p className="text-muted-foreground mb-6 mt-4">Anthryve acts as the central nervous system for your stack. We architect the data flow between your favorite tools so you can focus on deep work.</p>
                     <Button
                         variant="secondary"
                         size="sm"

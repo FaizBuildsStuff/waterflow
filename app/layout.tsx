@@ -3,23 +3,26 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Waterflow — Work that flows like water",
+  title: "Anthryve — Elevate your agency's momentum",
   description:
-    "Waterflow is the AI-powered workspace that thinks alongside your team — breaking down goals, automating follow-ups, and keeping every project in perfect motion.",
-  keywords: ["productivity", "AI workspace", "task management", "team collaboration", "waterflow"],
+    "Anthryve is the AI-powered workspace that thinks alongside your team — breaking down goals, automating follow-ups, and keeping every project in perfect motion.",
+  keywords: ["productivity", "AI workspace", "task management", "team collaboration", "anthryve"],
   authors: [{ name: "FaizuRrehman - FaizBuildsStuff" }],
   openGraph: {
-    title: "Waterflow — Work that flows like water",
+    title: "Anthryve — Elevate your agency's momentum",
     description:
       "The AI-powered workspace that keeps every project in perfect motion.",
-    siteName: "Waterflow",
+    siteName: "Anthryve",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Waterflow — Work that flows like water",
+    title: "Anthryve — Elevate your agency's momentum",
     description:
       "The AI-powered workspace that keeps every project in perfect motion.",
+  },
+  icons: {
+    icon: "/favicon.ico",
   },
 };
 

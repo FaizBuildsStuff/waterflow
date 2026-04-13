@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
         `;
         
         // Also create a default project for this new workspace
-        const defaultProjectName = 'Getting started with Waterflow';
+        const defaultProjectName = 'Getting started with Anthryve';
         const projectSlug = defaultProjectName.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Math.random().toString(36).substring(2, 7);
         
         await tx`
