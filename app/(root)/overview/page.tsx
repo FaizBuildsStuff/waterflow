@@ -1,5 +1,6 @@
 import { PageHero } from "@/components/page-hero";
 import { VisualSection, BentoGrid } from "@/components/page-sections";
+import { Button } from "@/components/ui/button";
 
 export default function OverviewPage() {
     return (
@@ -31,9 +32,9 @@ export default function OverviewPage() {
                 <div className="mx-auto max-w-2xl px-6">
                     <h2 className="text-4xl font-serif font-medium tracking-tight mb-8">Ready to evolve?</h2>
                     <p className="text-lg text-muted-foreground mb-12">Join the world's most innovative brands building on Anthryve.</p>
-                    <button className="h-14 px-10 rounded-full bg-foreground text-background font-bold hover:brightness-110 transition-all shadow-xl shadow-foreground/10">
+                    <Button size="lg" className="h-14 px-10 rounded-full font-bold shadow-xl shadow-foreground/10">
                         Request Private Access
-                    </button>
+                    </Button>
                 </div>
             </section>
         </main>

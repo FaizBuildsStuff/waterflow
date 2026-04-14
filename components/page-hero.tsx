@@ -1,5 +1,6 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 interface PageHeroProps {
     title: string;
@@ -15,7 +16,9 @@ export const PageHero = ({ title, subtitle, description, className }: PageHeroPr
                 <div className="absolute -top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-br from-indigo-500/10 to-purple-600/10 blur-[120px] rounded-full" />
             </div>
             <div className="mx-auto max-w-5xl px-6 text-center">
-                <span className="text-sm font-bold uppercase tracking-[0.2em] text-indigo-500">{subtitle}</span>
+                <Badge variant="outline" className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500 border-indigo-500/20 bg-indigo-500/5">
+                    {subtitle}
+                </Badge>
                 <h1 className="mt-6 text-balance font-serif text-5xl font-medium sm:text-6xl tracking-tight">
                     {title}
                 </h1>

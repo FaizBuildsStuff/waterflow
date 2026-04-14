@@ -5,6 +5,10 @@ import { cn } from '@/lib/utils'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 import { ArrowRight } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 // Layout 1: Split Visual Section
 export const VisualSection = ({ 
@@ -63,7 +67,9 @@ export const VisualSection = ({
                 )}>
                     {/* Content */}
                     <div ref={contentRef} className={cn("space-y-8", reverse && "lg:order-last")}>
-                        <span className="text-xs font-bold uppercase tracking-[0.3em] text-indigo-500">{subtitle}</span>
+                        <Badge variant="outline" className="px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-500 border-indigo-500/20 bg-indigo-500/5">
+                            {subtitle}
+                        </Badge>
                         <h2 className="text-4xl font-serif font-medium tracking-tight text-foreground sm:text-5xl">
                             {title}
                         </h2>
@@ -71,24 +77,26 @@ export const VisualSection = ({
                             {description}
                         </p>
                         <div className="pt-4">
-                            <button className="group flex items-center gap-2 text-foreground font-bold hover:text-indigo-500 transition-colors">
+                            <Button variant="ghost" className="group h-auto p-0 font-bold hover:bg-transparent hover:text-indigo-500 transition-colors">
                                 Explore Capability
-                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                            </button>
+                                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            </Button>
                         </div>
                     </div>
 
                     {/* Visual */}
                     <div ref={imageRef} className="relative group">
                         <div className="absolute -inset-4 bg-indigo-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="relative overflow-hidden rounded-3xl border border-border bg-card/50 aspect-video lg:aspect-square">
-                            <img 
-                                src={image} 
-                                alt={title}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                loading="lazy"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-60" />
+                        <div className="relative overflow-hidden rounded-3xl border border-border bg-card/50">
+                            <AspectRatio ratio={16 / 9} className="lg:aspect-square">
+                                <img 
+                                    src={image} 
+                                    alt={title}
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    loading="lazy"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-60" />
+                            </AspectRatio>
                         </div>
                     </div>
                 </div>
@@ -124,17 +132,21 @@ export const BentoGrid = ({ items }: { items: { title: string; description: stri
             <div className="mx-auto max-w-7xl px-6">
                 <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {items.map((item, i) => (
-                        <div 
+                        <Card 
                             key={i}
                             className={cn(
-                                "bento-item group relative overflow-hidden rounded-3xl border border-border bg-card hover:border-indigo-500/30 transition-all p-8",
+                                "bento-item group relative overflow-hidden rounded-3xl border border-border bg-card hover:border-indigo-500/30 transition-all shadow-none",
                                 item.span || ""
                             )}
                         >
-                            <div className="absolute -right-4 -top-4 size-24 bg-indigo-500/5 blur-2xl rounded-full" />
-                            <h3 className="text-xl font-bold text-foreground mb-4">{item.title}</h3>
-                            <p className="text-muted-foreground leading-relaxed">{item.description}</p>
-                        </div>
+                            <CardHeader className="p-8 pb-4">
+                                <div className="absolute -right-4 -top-4 size-24 bg-indigo-500/5 blur-2xl rounded-full" />
+                                <CardTitle className="text-xl font-bold text-foreground">{item.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="px-8 pb-8">
+                                <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+                            </CardContent>
+                        </Card>
                     ))}
                 </div>
             </div>
