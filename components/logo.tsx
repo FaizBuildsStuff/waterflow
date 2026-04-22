@@ -44,7 +44,7 @@ export const Logo = ({ className, uniColor = true, isScrolled = false }: { class
         <div className={cn("flex items-center", className)}>
             <div className={cn(
                 "flex items-center text-lg font-bold tracking-tighter transition-colors select-none",
-                uniColor ? "text-foreground" : "bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600"
+                uniColor ? "text-foreground" : "bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-400"
             )}>
                 <span>A</span>
                 <span 

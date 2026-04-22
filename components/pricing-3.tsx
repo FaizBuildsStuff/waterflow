@@ -80,7 +80,7 @@ export default function Pricing() {
         }
     };
     return (
-        <section className="bg-background @container py-24">
+        <section id="pricing" className="bg-background @container py-24">
             {/* Increased max-width to 5xl to accommodate 3 columns comfortably */}
             <div className="mx-auto max-w-5xl px-6">
                 <div className="text-center">

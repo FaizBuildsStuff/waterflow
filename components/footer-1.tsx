@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { Logo } from '@/components/logo'
 import { Button } from '@/components/ui/button'
-import { Github, Twitter, Instagram, Linkedin, ArrowUpRight, Send } from 'lucide-react'
+import { ArrowUpRight, Send } from 'lucide-react'
+import { socialLinks } from '@/lib/social-links'
 
 const footerLinks = {
     Product: [
@@ -39,18 +40,11 @@ const footerLinks = {
     ]
 }
 
-const socialLinks = [
-    { icon: Twitter, href: '#', label: 'Twitter' },
-    { icon: Instagram, href: '#', label: 'Instagram' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn' },
-    { icon: Github, href: '#', label: 'GitHub' },
-]
-
 export default function Footer() {
     return (
         <footer className="relative overflow-hidden bg-background pt-32 pb-12 select-none">
             {/* Background Texture & Gradients */}
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_40%_at_50%_0%,rgba(99,102,241,0.05)_0%,transparent_100%)]" />
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_40%_at_50%_0%,rgba(255,255,255,0.03)_0%,transparent_100%)]" />
             <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,transparent,rgba(0,0,0,0.2))]" />
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
             
@@ -70,12 +64,14 @@ export default function Footer() {
                             <div className="flex items-center gap-3">
                                 {socialLinks.map((social) => (
                                     <Link
-                                        key={social.label}
+                                        key={social.name}
                                         href={social.href}
-                                        className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card/50 transition-all duration-300 hover:border-indigo-500/30 hover:bg-indigo-500/5 hover:-translate-y-1"
-                                        aria-label={social.label}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group relative flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card/50 transition-all duration-300 hover:border-foreground/30 hover:bg-white/5 hover:-translate-y-1"
+                                        aria-label={social.name}
                                     >
-                                        <div className="absolute inset-0 rounded-xl bg-indigo-500/0 opacity-0 blur-xl transition-all duration-300 group-hover:bg-indigo-500/10 group-hover:opacity-100" />
+                                        <div className="absolute inset-0 rounded-xl bg-white/0 opacity-0 blur-xl transition-all duration-300 group-hover:bg-white/5 group-hover:opacity-100" />
                                         <social.icon className="h-[18px] w-[18px] text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
                                     </Link>
                                 ))}
@@ -98,7 +94,7 @@ export default function Footer() {
                                                 >
                                                     <span className="relative">
                                                         {link.label}
-                                                        <span className="absolute -bottom-1 left-0 h-px w-0 bg-indigo-500/40 transition-all duration-300 group-hover:w-full" />
+                                                        <span className="absolute -bottom-1 left-0 h-px w-0 bg-foreground/40 transition-all duration-300 group-hover:w-full" />
                                                     </span>
                                                     <ArrowUpRight className="ml-1 h-3 w-3 translate-x-[-4px] translate-y-[4px] opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100" />
                                                 </Link>
@@ -127,11 +123,11 @@ export default function Footer() {
                                     <input
                                         type="email"
                                         placeholder="Enter your email"
-                                        className="h-14 w-full rounded-2xl bg-background/50 border border-border/80 px-6 pr-16 text-sm ring-offset-background transition-all placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/20 focus-visible:border-indigo-500/30 group-hover:border-indigo-500/20"
+                                        className="h-14 w-full rounded-2xl bg-background/50 border border-border/80 px-6 pr-16 text-sm ring-offset-background transition-all placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/10 focus-visible:border-foreground/20 group-hover:border-foreground/10"
                                     />
                                     <button 
                                         type="submit"
-                                        className="absolute right-2 top-2 h-10 w-10 flex items-center justify-center rounded-xl bg-foreground text-background transition-all duration-300 hover:scale-105 active:scale-95 group-hover:bg-indigo-600 group-hover:text-white group-hover:shadow-[0_0_20px_rgba(79,70,229,0.3)]"
+                                        className="absolute right-2 top-2 h-10 w-10 flex items-center justify-center rounded-xl bg-foreground text-background transition-all duration-300 hover:scale-105 active:scale-95 group-hover:bg-foreground group-hover:text-background group-hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                                     >
                                         <Send className="h-4 w-4" />
                                     </button>

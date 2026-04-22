@@ -12,7 +12,7 @@ import Link from 'next/link'
 
 export default function Integrations() {
     return (
-        <section className="bg-background @container py-24">
+        <section id="integrations" className="bg-background @container py-24">
             <div className="mx-auto max-w-2xl px-6">
                 <IntegrationsIllustration />
                 <div className="mx-auto mt-12 max-w-md text-balance text-center">
